@@ -11,6 +11,41 @@ import (
 	"strings"
 )
 
+func DOT[T any](g Graph[T], w io.Writer) error {
+	buf := new(bytes.Buffer)
+
+	fmt.Fprintln(buf, "digraph {")
+	for v := range g.Order() {
+		for ww, _ := range g.EdgesFrom(v) {
+			fmt.Fprintf(buf, "\t%d -> %d\n", v, ww)
+		}
+	}
+	fmt.Fprintln(buf, "}")
+
+	_, err := io.Copy(w, buf)
+	return err
+}
+
+func Write[T any](g Graph[T], w io.Writer) error {
+	n := g.Order()
+
+	_, err := fmt.Fprintf(w, "%d\n", n)
+	if err != nil {
+		return err
+	}
+
+	for v := range n {
+		for ww, weight := range g.EdgesFrom(v) {
+			_, err := fmt.Fprintf(w, "%d,%d,%v\n", v, ww, weight)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
 func Read(path string) (*Mutable[int], error) {
 	numVertices, _, _ := strings.Cut(filepath.Base(path), "_")
 	n, err := strconv.Atoi(numVertices)
