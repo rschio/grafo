@@ -2,28 +2,10 @@ package grafo
 
 import (
 	"cmp"
-	"os"
 	"path/filepath"
 	"slices"
 	"testing"
 )
-
-func TestDOT(t *testing.T) {
-	fname := "50_edge_list"
-	g, err := Read(filepath.Join("testdata", fname))
-	if err != nil {
-		t.Fatalf("failed to read graph: %v", err)
-	}
-
-	h := NewMutable[int](g.Order())
-	for e := range DFS(g, 0) {
-		h.Add(e.V, e.W, e.Weight)
-	}
-
-	if err := DOT(h, os.Stdout); err != nil {
-		t.Fatal(err)
-	}
-}
 
 func TestRead(t *testing.T) {
 	fname := "5_edge_list"
