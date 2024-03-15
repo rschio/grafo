@@ -1,7 +1,7 @@
 package grafo
 
 import (
-	"fmt"
+	"path/filepath"
 	"slices"
 	"sort"
 	"testing"
@@ -33,13 +33,47 @@ func TestDFS(t *testing.T) {
 			t.Error(err1)
 			t.Error(err2)
 		}
-		fmt.Println(visited)
 
 		// Visited all vertices, execept the starting one.
 		sort.Ints(visited)
 		want := []int{1, 2, 3, 4, 5}
 		if slices.Compare(visited, want) != 0 {
 			t.Error("not all vertices were visited")
+		}
+	})
+
+	t.Run("Possible Trees", func(t *testing.T) {
+		g, err := Read(filepath.Join("testdata", "7_dfs_graph"))
+		if err != nil {
+			t.Fatalf("failed to read graph: %v", err)
+		}
+
+		possiblePaths := [][]int{
+			{0, 1, 4, 5, 3, 2, 6},
+			{0, 1, 4, 5, 2, 6, 3},
+			{0, 1, 3, 4, 5, 2, 6},
+			{0, 1, 3, 2, 6, 4, 5},
+			{0, 1, 2, 6, 3, 4, 5},
+			{0, 1, 2, 6, 4, 5, 3},
+		}
+
+		path := make([]int, 0)
+		path = append(path, 0)
+		for e := range DFS(g, 0) {
+			path = append(path, e.W)
+		}
+
+		allDiferent := true
+		for _, p := range possiblePaths {
+			if slices.Equal(path, p) {
+				allDiferent = false
+				break
+			}
+		}
+
+		if allDiferent {
+			t.Errorf("the path is diferent from all possible paths.\ngot %v\nwant%v",
+				path, possiblePaths)
 		}
 	})
 }
