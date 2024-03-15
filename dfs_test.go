@@ -42,38 +42,39 @@ func TestDFS(t *testing.T) {
 		}
 	})
 
-	t.Run("Possible Trees", func(t *testing.T) {
-		g, err := Read(filepath.Join("testdata", "7_dfs_graph"))
-		if err != nil {
-			t.Fatalf("failed to read graph: %v", err)
-		}
+}
 
-		possiblePaths := [][]int{
-			{0, 1, 4, 5, 3, 2, 6},
-			{0, 1, 4, 5, 2, 6, 3},
-			{0, 1, 3, 4, 5, 2, 6},
-			{0, 1, 3, 2, 6, 4, 5},
-			{0, 1, 2, 6, 3, 4, 5},
-			{0, 1, 2, 6, 4, 5, 3},
-		}
+func TestDFSPossibleTrees(t *testing.T) {
+	g, err := Read(filepath.Join("testdata", "7_dfs_graph"))
+	if err != nil {
+		t.Fatalf("failed to read graph: %v", err)
+	}
 
-		path := make([]int, 0)
-		path = append(path, 0)
-		for e := range DFS(g, 0) {
-			path = append(path, e.W)
-		}
+	possiblePaths := [][]int{
+		{0, 1, 4, 5, 3, 2, 6},
+		{0, 1, 4, 5, 2, 6, 3},
+		{0, 1, 3, 4, 5, 2, 6},
+		{0, 1, 3, 2, 6, 4, 5},
+		{0, 1, 2, 6, 3, 4, 5},
+		{0, 1, 2, 6, 4, 5, 3},
+	}
 
-		allDiferent := true
-		for _, p := range possiblePaths {
-			if slices.Equal(path, p) {
-				allDiferent = false
-				break
-			}
-		}
+	path := make([]int, 0)
+	path = append(path, 0)
+	for e := range DFS(g, 0) {
+		path = append(path, e.W)
+	}
 
-		if allDiferent {
-			t.Errorf("the path is diferent from all possible paths.\ngot %v\nwant%v",
-				path, possiblePaths)
+	allDiferent := true
+	for _, p := range possiblePaths {
+		if slices.Equal(path, p) {
+			allDiferent = false
+			break
 		}
-	})
+	}
+
+	if allDiferent {
+		t.Errorf("the path is diferent from all possible paths.\ngot %v\nwant%v",
+			path, possiblePaths)
+	}
 }

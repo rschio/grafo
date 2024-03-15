@@ -2,26 +2,19 @@ package grafo
 
 import "testing"
 
-func BenchmarkBFS(b *testing.B) {
-	g := Sort(completeGraph(1000))
+var complete = Sort(completeGraph(1000))
 
-	b.ResetTimer()
-	b.ReportAllocs()
+func BenchmarkBFS(b *testing.B) {
 	for range b.N {
-		for e := range BFS(g, 0) {
+		for e := range BFS(complete, 0) {
 			_ = e
 		}
 	}
 }
 
 func BenchmarkDFSIter(b *testing.B) {
-	//g := Sort(GenerateRandomEdges(1_000, 5_000, 20))
-	g := Sort(completeGraph(1000))
-
-	b.ResetTimer()
-	b.ReportAllocs()
 	for range b.N {
-		for e := range DFS(g, 0) {
+		for e := range DFS(complete, 0) {
 			_ = e
 		}
 	}
