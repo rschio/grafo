@@ -6,6 +6,10 @@ run:
 
 test:
 	GOEXPERIMENT=rangefunc go test -count=1 ./...
+
+test_cover:
+	GOEXPERIMENT=rangefunc go test -coverprofile=c.out -count=1 ./...
+
 testv:
 	GOEXPERIMENT=rangefunc go test -count=1 -v ./...
 
