@@ -17,7 +17,7 @@ type IntegerOrFloat interface {
 		~float32 | ~float64
 }
 
-func infFor[T IntegerOrFloat]() T {
+func InfFor[T IntegerOrFloat]() T {
 	switch reflect.TypeFor[T]().Kind() {
 	case reflect.Int8:
 		return math.MaxInt8
