@@ -20,6 +20,13 @@ func BenchmarkDFSIter(b *testing.B) {
 	}
 }
 
+func Benchmark_infFor(b *testing.B) {
+	for range b.N {
+		v := infFor[uint64]()
+		_ = v
+	}
+}
+
 func completeGraph(n int) *Mutable[struct{}] {
 	g := NewMutable[struct{}](n)
 	for v := range n {

@@ -3,6 +3,7 @@ package grafo
 import (
 	"iter"
 	"math"
+	"reflect"
 )
 
 type Graph[T any] interface {
@@ -16,29 +17,40 @@ type IntegerOrFloat interface {
 		~float32 | ~float64
 }
 
-var maxes = [...]uint64{
-	math.MaxInt8,
-	math.MaxUint8,
-	math.MaxInt16,
-	math.MaxUint16,
-	math.MaxInt32,
-	math.MaxUint32,
-	math.MaxInt64,
-	math.MaxUint64,
-}
-
 func infFor[T IntegerOrFloat]() T {
-	// Check if T is a float.
-	var f float64 = 1.5
-	if float64(T(f)) == f {
+	switch reflect.TypeFor[T]().Kind() {
+	case reflect.Int8:
+		return math.MaxInt8
+	case reflect.Int16:
+		v := uint64(math.MaxInt16)
+		return T(v)
+	case reflect.Int32:
+		v := uint64(math.MaxInt32)
+		return T(v)
+	case reflect.Int64:
+		v := uint64(math.MaxInt64)
+		return T(v)
+	case reflect.Int:
+		v := uint64(math.MaxInt)
+		return T(v)
+	case reflect.Uint8:
+		v := uint64(math.MaxUint8)
+		return T(v)
+	case reflect.Uint16:
+		v := uint64(math.MaxUint16)
+		return T(v)
+	case reflect.Uint32:
+		v := uint64(math.MaxUint32)
+		return T(v)
+	case reflect.Uint64:
+		v := uint64(math.MaxUint64)
+		return T(v)
+	case reflect.Uint, reflect.Uintptr:
+		v := uint64(math.MaxUint)
+		return T(v)
+	case reflect.Float32, reflect.Float64:
 		return T(math.Inf(1))
+	default:
+		return *new(T)
 	}
-
-	// Check when v overflows.
-	var v T
-	for i := 0; v+1 > 0; i++ {
-		v = T(maxes[i])
-	}
-
-	return v
 }
