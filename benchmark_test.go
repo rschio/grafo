@@ -1,6 +1,8 @@
 package grafo
 
-import "testing"
+import (
+	"testing"
+)
 
 var complete = Sort(completeGraph(1000))
 
@@ -24,6 +26,18 @@ func Benchmark_infFor(b *testing.B) {
 	for range b.N {
 		v := InfFor[uint64]()
 		_ = v
+	}
+}
+
+func BenchmarkRange(b *testing.B) {
+	var g Graph[struct{}] = complete
+
+	for range b.N {
+		for v := range g.Order() {
+			for w, wt := range g.EdgesFrom(v) {
+				_, _ = w, wt
+			}
+		}
 	}
 }
 
