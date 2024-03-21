@@ -28,8 +28,9 @@
 
 package grafo
 
-import "cmp"
-
+// MST find the minimum spanning tree or forest and return a slice with the
+// parent of each vertex.
+// The algorithm ignore edges with NaN weights.
 func MST[T IntegerOrFloat](g Graph[T]) (parent []int) {
 	n := g.Order()
 	weight := make([]T, n)
@@ -45,7 +46,11 @@ func MST[T IntegerOrFloat](g Graph[T]) (parent []int) {
 	for Q.Len() > 0 {
 		v := Q.Pop()
 		for w, wt := range g.EdgesFrom(v) {
-			if Q.Contains(w) && cmp.Less(wt, weight[w]) {
+			// Ignore NaN weights.
+			if isNaN(wt) {
+				continue
+			}
+			if Q.Contains(w) && wt < weight[w] {
 				weight[w] = wt
 				Q.Fix(w)
 				parent[w] = v

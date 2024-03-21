@@ -1,9 +1,11 @@
 package grafo
 
-import "cmp"
+import (
+	"cmp"
+)
 
 // ShortestPath computes a shortest path from v to w.
-// Only edges with non-negative costs are included.
+// Only edges with non-negative and non-NaN costs are included.
 // The number dist is the length of the path, or inf if w cannot be reached.
 // (inf is +inf for floats and the maximum value for integers).
 //
@@ -25,7 +27,7 @@ func ShortestPath[T IntegerOrFloat](g Graph[T], v, w int) (path []int, dist T) {
 }
 
 // ShortestPaths computes the shortest paths from v to all other vertices.
-// Only edges with non-negative costs are included.
+// Only edges with non-negative and non-NaN costs are included.
 // The number parent[w] is the predecessor of w on a shortest path from v to w,
 // or -1 if none exists.
 // The number dist[w] equals the length of a shortest path from v to w,
@@ -61,8 +63,8 @@ func shortestPath[T IntegerOrFloat](g Graph[T], v, w int) (parent []int, dist []
 			return
 		}
 		for w, weight := range g.EdgesFrom(v) {
-			// Skip negative edges.
-			if cmp.Less(weight, 0) {
+			// Skip NaN and negative edges.
+			if isNaN(weight) || weight < 0 {
 				continue
 			}
 			alt := dist[v] + weight
@@ -70,7 +72,7 @@ func shortestPath[T IntegerOrFloat](g Graph[T], v, w int) (parent []int, dist []
 			case dist[w] == inf:
 				dist[w], parent[w] = alt, v
 				Q.Push(w)
-			case cmp.Less(alt, dist[w]):
+			case alt < dist[w]:
 				dist[w], parent[w] = alt, v
 				Q.Fix(w)
 			}
@@ -78,4 +80,8 @@ func shortestPath[T IntegerOrFloat](g Graph[T], v, w int) (parent []int, dist []
 	}
 
 	return
+}
+
+func isNaN[T cmp.Ordered](x T) bool {
+	return x != x
 }
