@@ -98,7 +98,7 @@ func (q *prioQueue[S, E]) Fix(v int) {
 }
 
 func (q *prioQueue[S, E]) less(i, j int) bool {
-	return q.cost[q.heap[i]] < q.cost[q.heap[j]]
+	return cmp.Less(q.cost[q.heap[i]], q.cost[q.heap[j]])
 }
 
 func (q *prioQueue[S, E]) swap(i, j int) {

@@ -1,5 +1,7 @@
 package grafo
 
+import "cmp"
+
 // ShortestPath computes a shortest path from v to w.
 // Only edges with non-negative costs are included.
 // The number dist is the length of the path, or inf if w cannot be reached.
@@ -60,7 +62,7 @@ func shortestPath[T IntegerOrFloat](g Graph[T], v, w int) (parent []int, dist []
 		}
 		for w, weight := range g.EdgesFrom(v) {
 			// Skip negative edges.
-			if weight < 0 {
+			if cmp.Less(weight, 0) {
 				continue
 			}
 			alt := dist[v] + weight
@@ -68,7 +70,7 @@ func shortestPath[T IntegerOrFloat](g Graph[T], v, w int) (parent []int, dist []
 			case dist[w] == inf:
 				dist[w], parent[w] = alt, v
 				Q.Push(w)
-			case alt < dist[w]:
+			case cmp.Less(alt, dist[w]):
 				dist[w], parent[w] = alt, v
 				Q.Fix(w)
 			}

@@ -28,6 +28,8 @@
 
 package grafo
 
+import "cmp"
+
 func MST[T IntegerOrFloat](g Graph[T]) (parent []int) {
 	n := g.Order()
 	weight := make([]T, n)
@@ -43,7 +45,7 @@ func MST[T IntegerOrFloat](g Graph[T]) (parent []int) {
 	for Q.Len() > 0 {
 		v := Q.Pop()
 		for w, wt := range g.EdgesFrom(v) {
-			if Q.Contains(w) && wt < weight[w] {
+			if Q.Contains(w) && cmp.Less(wt, weight[w]) {
 				weight[w] = wt
 				Q.Fix(w)
 				parent[w] = v
