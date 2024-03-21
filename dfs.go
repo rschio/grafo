@@ -2,11 +2,6 @@ package grafo
 
 import "iter"
 
-type Edge[T any] struct {
-	V, W   int
-	Weight T
-}
-
 // DFS returns an iterator of edges that traverse the graph
 // in Depth First Search way, starting from vertex v.
 func DFS[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
