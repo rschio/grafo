@@ -14,7 +14,9 @@ import (
 func ShortestPath[T IntegerOrFloat](g Graph[T], v, w int) (path []int, dist T) {
 	parent, distances := shortestPath(g, v, w)
 	path, dist = []int{}, distances[w]
-	if dist == InfFor[T]() {
+	// dist can be inf if w is unreachable or if there is a path
+	// of inifinity cost.
+	if dist == InfFor[T]() && parent[w] == -1 {
 		return
 	}
 	for v := w; v != -1; v = parent[v] {
@@ -51,6 +53,11 @@ func shortestPath[T IntegerOrFloat](g Graph[T], v, w int) (parent []int, dist []
 		dist[i], parent[i] = inf, -1
 	}
 	dist[v] = 0
+	// Set v as its own parent to mark as visited, and
+	// before returning the function mark its parent to -1
+	// because v is not a self-loop.
+	parent[v] = v
+	defer func(v int) { parent[v] = -1 }(v)
 
 	// Dijkstra's algorithm
 	Q := emptyPrioQueue(dist)
@@ -68,8 +75,17 @@ func shortestPath[T IntegerOrFloat](g Graph[T], v, w int) (parent []int, dist []
 				continue
 			}
 			alt := dist[v] + weight
+			// TODO: is this assumption right? Should we allow an
+			// infinite weight edge in a shortest path?
+			//
+			// alt < dist[v] is an int overflow,
+			// if there is an overflow the distance is bigger
+			// than inf so treat as inf.
+			if alt < dist[v] {
+				alt = inf
+			}
 			switch {
-			case dist[w] == inf:
+			case parent[w] == -1:
 				dist[w], parent[w] = alt, v
 				Q.Push(w)
 			case alt < dist[w]:

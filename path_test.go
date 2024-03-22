@@ -29,10 +29,94 @@
 package grafo
 
 import (
+	"math/rand/v2"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
 )
+
+func TestShortestPathInf(t *testing.T) {
+	t.Run("base", func(t *testing.T) {
+		inf := InfFor[int]()
+		g := NewMutable[int](3)
+		g.Add(0, 2, inf)
+
+		want := []int{0, 2}
+		path, dist := ShortestPath(g, 0, 2)
+		if diff := cmp.Diff(path, want); diff != "" {
+			t.Errorf("should return a path. Diff: %s", diff)
+		}
+		if dist != inf {
+			t.Errorf("should return an infinite dist. Got %v", dist)
+		}
+	})
+
+	t.Run("loop", func(t *testing.T) {
+		inf := InfFor[int]()
+		g := NewMutable[int](4)
+		g.Add(0, 1, 1)
+		g.Add(1, 2, 1)
+		g.Add(2, 0, 1)
+		g.Add(2, 3, inf)
+		parent, dist := ShortestPaths(g, 0)
+		wantParent := []int{-1, 0, 1, 2}
+		wantDist := []int{0, 1, 2, inf}
+		if diff := cmp.Diff(parent, wantParent); diff != "" {
+			t.Errorf("ShortestPath->path %s", diff)
+		}
+		if diff := cmp.Diff(dist, wantDist); diff != "" {
+			t.Errorf("ShortestPath->dist %s", diff)
+		}
+	})
+
+	t.Run("int inf + 1", func(t *testing.T) {
+		inf := InfFor[int]()
+		g := NewMutable[int](3)
+		g.Add(0, 1, 1)
+		g.Add(1, 2, inf)
+
+		want := []int{0, 1, 2}
+		path, dist := ShortestPath(g, 0, 2)
+		if diff := cmp.Diff(path, want); diff != "" {
+			t.Errorf("should return a path. Diff: %s", diff)
+		}
+		if dist != inf {
+			t.Errorf("should return an infinite dist. Got %v", dist)
+		}
+	})
+
+	t.Run("uint inf + 1", func(t *testing.T) {
+		inf := InfFor[uint]()
+		g := NewMutable[uint](3)
+		g.Add(0, 1, 1)
+		g.Add(1, 2, inf)
+
+		want := []int{0, 1, 2}
+		path, dist := ShortestPath(g, 0, 2)
+		if diff := cmp.Diff(path, want); diff != "" {
+			t.Errorf("should return a path. Diff: %s", diff)
+		}
+		if dist != inf {
+			t.Errorf("should return an infinite dist. Got %v", dist)
+		}
+	})
+
+	t.Run("float inf + 1", func(t *testing.T) {
+		inf := InfFor[float64]()
+		g := NewMutable[float64](3)
+		g.Add(0, 1, 1)
+		g.Add(1, 2, inf)
+
+		want := []int{0, 1, 2}
+		path, dist := ShortestPath(g, 0, 2)
+		if diff := cmp.Diff(path, want); diff != "" {
+			t.Errorf("should return a path. Diff: %s", diff)
+		}
+		if dist != inf {
+			t.Errorf("should return an infinite dist. Got %v", dist)
+		}
+	})
+}
 
 func TestShortestPath(t *testing.T) {
 	t.Run("float64", func(t *testing.T) {
@@ -133,4 +217,30 @@ func TestShortestPath(t *testing.T) {
 		}
 
 	})
+}
+
+func BenchmarkShortestPaths(b *testing.B) {
+	n := 100
+	g := NewMutable[int64](n)
+	for i := 0; i < 2*n; i++ {
+		g.Add(rand.IntN(n), rand.IntN(n), int64(rand.Int()))
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = ShortestPaths(g, 0)
+	}
+}
+
+func BenchmarkShortestPath(b *testing.B) {
+	n := 100
+	g := NewMutable[int64](n)
+	for i := 0; i < 2*n; i++ {
+		g.Add(rand.IntN(n), rand.IntN(n), int64(rand.Int()))
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_, _ = ShortestPath(g, 0, n-1)
+	}
 }
