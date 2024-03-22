@@ -67,7 +67,7 @@ func shortestPath[T IntegerOrFloat](g Graph[T], v, w int) (parent []int, dist []
 	for Q.Len() > 0 {
 		v = Q.Pop()
 		if v == dst {
-			return
+			return parent, dist
 		}
 		for w, weight := range g.EdgesFrom(v) {
 			// Skip NaN and negative edges.
@@ -95,7 +95,7 @@ func shortestPath[T IntegerOrFloat](g Graph[T], v, w int) (parent []int, dist []
 		}
 	}
 
-	return
+	return parent, dist
 }
 
 func isNaN[T cmp.Ordered](x T) bool {
