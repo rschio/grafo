@@ -217,6 +217,29 @@ func TestShortestPath(t *testing.T) {
 		}
 
 	})
+
+	t.Run("ime", func(t *testing.T) {
+		g := NewMutable[int](6)
+		g.Add(0, 1, 10)
+		g.Add(0, 2, 20)
+		g.Add(1, 3, 70)
+		g.Add(1, 4, 80)
+		g.Add(2, 3, 50)
+		g.Add(2, 4, 60)
+		g.Add(3, 1, 0)
+		g.Add(3, 5, 10)
+		g.Add(4, 5, 10)
+
+		parent, dist := ShortestPaths(g, 0)
+		wantParent := []int{-1, 0, 0, 2, 2, 3}
+		wantDist := []int{0, 10, 20, 70, 80, 80}
+		if diff := cmp.Diff(parent, wantParent); diff != "" {
+			t.Errorf("ShortestPath->parent %s", diff)
+		}
+		if diff := cmp.Diff(dist, wantDist); diff != "" {
+			t.Errorf("ShortestPath->dist %s", diff)
+		}
+	})
 }
 
 func BenchmarkShortestPaths(b *testing.B) {
