@@ -3,6 +3,8 @@ package grafo
 // BellmanFord calculate the shortest path from v to all other vertices.
 // The function returns the a slice of parent, a slice of dist containing the dists
 // between v and the vertex and return ok if there isn't a negative cycle.
+//
+// The algorithm skip NaN weighted edges.
 func BellmanFord[T IntegerOrFloat](g Graph[T], v int) (parent []int, dist []T, ok bool) {
 	n := g.Order()
 	inf := InfFor[T]()
@@ -30,6 +32,9 @@ func BellmanFord[T IntegerOrFloat](g Graph[T], v int) (parent []int, dist []T, o
 		v = Q.Remove()
 		if v < sentinel {
 			for w, weight := range g.EdgesFrom(v) {
+				if isNaN(weight) {
+					continue
+				}
 				alt := add(dist[v], weight)
 				if alt < dist[w] {
 					dist[w] = alt
