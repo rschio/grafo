@@ -1,3 +1,7 @@
+draw:
+	GOEXPERIMENT=rangefunc go run cmd/main.go | \
+		gvpr -c -f ./scripts/weight.gvpr | dot -Tpdf | open -f -a Preview
+
 build:
 	GOEXPERIMENT=rangefunc go build .
 

@@ -16,8 +16,8 @@ func DOT[T any](g Graph[T], w io.Writer) error {
 
 	fmt.Fprintln(buf, "digraph {")
 	for v := range g.Order() {
-		for ww, _ := range g.EdgesFrom(v) {
-			fmt.Fprintf(buf, "\t%d -> %d\n", v, ww)
+		for ww, wt := range g.EdgesFrom(v) {
+			fmt.Fprintf(buf, "\t%d -> %d [weight=%v]\n", v, ww, wt)
 		}
 	}
 	fmt.Fprintln(buf, "}")
