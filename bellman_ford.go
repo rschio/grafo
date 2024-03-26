@@ -6,6 +6,8 @@ package grafo
 //
 // The algorithm skip NaN weighted edges.
 func BellmanFord[T IntegerOrFloat](g Graph[T], v int) (parent []int, dist []T, ok bool) {
+	// Adapted from https://www.ime.usp.br/~pf/algoritmos_para_grafos/aulas/bellman-ford.html.
+
 	n := g.Order()
 	inf := InfFor[T]()
 	parent = make([]int, n)
@@ -17,7 +19,6 @@ func BellmanFord[T IntegerOrFloat](g Graph[T], v int) (parent []int, dist []T, o
 		onQueue[i] = false
 	}
 
-	// TODO: parent[v] should be v or -1?
 	parent[v] = -1
 	dist[v] = 0
 	Q := newBfsQueue(n)
