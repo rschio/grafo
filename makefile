@@ -8,6 +8,9 @@ build:
 run:
 	GOEXPERIMENT=rangefunc go run .
 
+fuzz:
+	GOEXPERIMENT=rangefunc go test -fuzz=. -count=1 .
+
 test:
 	GOEXPERIMENT=rangefunc go test -count=1 ./...
 
