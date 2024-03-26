@@ -14,7 +14,7 @@ import (
 func ShortestPath[T IntegerOrFloat](g Graph[T], v, w int) (path []int, dist T) {
 	parent, distances := shortestPath(g, v, w)
 	path, dist = []int{}, distances[w]
-	// dist can be inf if w is unreachable or if there is a path
+	// dist can be inf when w is unreachable or if there is a path
 	// of inifinity cost.
 	if dist == InfFor[T]() && parent[w] == -1 {
 		return
@@ -46,6 +46,7 @@ func ShortestPaths[T IntegerOrFloat](g Graph[T], v int) (parent []int, dist []T)
 
 func shortestPath[T IntegerOrFloat](g Graph[T], v, w int) (parent []int, dist []T) {
 	n := g.Order()
+	mature := make([]bool, n)
 	dist = make([]T, n)
 	parent = make([]int, n)
 	inf := InfFor[T]()
@@ -53,31 +54,26 @@ func shortestPath[T IntegerOrFloat](g Graph[T], v, w int) (parent []int, dist []
 		dist[i], parent[i] = inf, -1
 	}
 	dist[v] = 0
-	// Set v as its own parent to mark as visited, and
-	// before returning the function mark its parent to -1
-	// because v is not a self-loop.
-	parent[v] = v
-	defer func(v int) { parent[v] = -1 }(v)
 
 	// Dijkstra's algorithm
 	Q := emptyPrioQueue(dist)
 	Q.Push(v)
 
-	dst := w
+	target := w
 	for Q.Len() > 0 {
 		v = Q.Pop()
-		if v == dst {
+		if v == target {
 			return parent, dist
 		}
 		for w, weight := range g.EdgesFrom(v) {
+			if mature[w] {
+				continue
+			}
 			// Skip NaN and negative edges.
 			if isNaN(weight) || weight < 0 {
 				continue
 			}
 			alt := dist[v] + weight
-			// TODO: is this assumption right? Should we allow an
-			// infinite weight edge in a shortest path?
-			//
 			// alt < dist[v] is an int overflow,
 			// if there is an overflow the distance is bigger
 			// than inf so treat as inf.
@@ -93,6 +89,7 @@ func shortestPath[T IntegerOrFloat](g Graph[T], v, w int) (parent []int, dist []
 				Q.Fix(w)
 			}
 		}
+		mature[v] = true
 	}
 
 	return parent, dist
