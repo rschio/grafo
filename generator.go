@@ -9,12 +9,12 @@ import (
 // It panics if E > V * (V - 1).
 //
 // This function is generally not suitable for generating huge dense graphs.
-func GenerateRandomEdges(V, E, maxWeight int) *Mutable[int] {
+func GenerateRandomEdges[T int | int64](V, E int, maxWeight T) *Mutable[T] {
 	if E > V*(V-1) {
 		panic("GenerateRandomEdges does not generate self-loops or parallel edges, but got: E > V * (V - 1)")
 	}
 
-	g := NewMutable[int](V)
+	g := NewMutable[T](V)
 
 	inserted := make(map[[2]int]struct{})
 	for len(inserted) < E {
