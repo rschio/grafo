@@ -8,7 +8,7 @@ func DFS[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
 	return func(yield func(e Edge[T]) bool) {
 		visited := make([]bool, g.Order())
 		visited[v] = true
-		stk := new(stack[T])
+		stk := new(stack[Edge[T]])
 
 		for w, weight := range g.EdgesFrom(v) {
 			stk.Push(Edge[T]{V: v, W: w, Weight: weight})
@@ -38,16 +38,16 @@ func DFS[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
 }
 
 type stack[T any] struct {
-	s []Edge[T]
+	s []T
 }
 
 func (s *stack[T]) Len() int { return len(s.s) }
 
-func (s *stack[T]) Push(v Edge[T]) {
+func (s *stack[T]) Push(v T) {
 	s.s = append(s.s, v)
 }
 
-func (s *stack[T]) Pop() Edge[T] {
+func (s *stack[T]) Pop() T {
 	v := s.s[len(s.s)-1]
 	s.s = s.s[:len(s.s)-1]
 	return v
