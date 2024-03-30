@@ -1,30 +1,33 @@
 package grafo
 
-func Tarjan[T any](g Graph[T]) [][]int {
+import "math"
+
+func StrongComponents[T any](g Graph[T]) [][]int {
 	n := g.Order()
-	pre := make([]int, n)
 	low := make([]int, n)
 	for i := range n {
-		pre[i], low[i] = -1, -1
+		low[i] = -1
 	}
 
 	s := &scc{
-		stk: new(stack[int]),
-		pre: pre,
-		low: low,
+		stk:     new(stack[int]),
+		visited: make([]bool, n),
+		low:     low,
 	}
 	for v := range n {
-		if s.pre[v] == -1 {
+		if !s.visited[v] {
 			strongConnected(g, s, v)
+			//SCdfsR(g, s, v)
 		}
 	}
 
 	return s.components
 }
 
+// Tarjan algorithm.
 type scc struct {
 	stk        *stack[int]
-	pre        []int
+	visited    []bool
 	low        []int
 	cnt        int
 	components [][]int
@@ -42,17 +45,16 @@ func strongConnected[T any](g Graph[T], s *scc, v int) {
 		ww := work.Pop()
 		v, j := ww[0], ww[1]
 		if j == 0 {
-			s.pre[v] = s.cnt
+			s.visited[v] = true
+			s.low[v] = s.cnt
 			s.cnt++
-			s.low[v] = s.pre[v]
 			minV = s.low[v]
 			s.stk.Push(v)
 		}
 		recurse := false
-		i := j
 		for w, _ := range g.EdgesFrom(v) {
-			if s.pre[w] == -1 {
-				work.Push([2]int{v, i + 1})
+			if !s.visited[w] {
+				work.Push([2]int{v, j + 1})
 				work.Push([2]int{w, 0})
 				recurse = true
 				break
@@ -64,48 +66,43 @@ func strongConnected[T any](g Graph[T], s *scc, v int) {
 				s.low[v] = minV
 				continue
 			}
-
-			var comp []int
-			for {
-				u := s.stk.Pop()
-				s.low[u] = g.Order()
-				comp = append(comp, u)
-				if u == v {
-					break
-				}
-			}
-			s.components = append(s.components, comp)
+			extractComponent(s, v)
 		}
 	}
 }
 
-//func SCdfsR[T any](g Graph[T], s *scc, v int) {
-//	s.pre[v] = s.cnt
-//	s.cnt++
-//	s.low[v] = s.pre[v]
-//	minV := s.low[v]
-//	s.stk.Push(v)
-//
-//	for w, _ := range g.EdgesFrom(v) {
-//		if s.pre[w] == -1 {
-//			SCdfsR(g, s, w)
-//		}
-//		minV = min(minV, s.low[w])
-//	}
-//
-//	if minV < s.low[v] {
-//		s.low[v] = minV
-//		return
-//	}
-//
-//	var comp []int
-//	for {
-//		u := s.stk.Pop()
-//		s.low[u] = g.Order()
-//		comp = append(comp, u)
-//		if u == v {
-//			break
-//		}
-//	}
-//	s.components = append(s.components, comp)
-//}
+func SCdfsR[T any](g Graph[T], s *scc, v int) {
+	s.visited[v] = true
+	s.low[v] = s.cnt
+	s.cnt++
+	minV := s.low[v]
+	s.stk.Push(v)
+
+	for w, _ := range g.EdgesFrom(v) {
+		if !s.visited[w] {
+			SCdfsR(g, s, w)
+		}
+		minV = min(minV, s.low[w])
+	}
+
+	if minV < s.low[v] {
+		s.low[v] = minV
+		return
+	}
+
+	// We are in the head.
+	extractComponent(s, v)
+}
+
+func extractComponent(s *scc, v int) {
+	var comp []int
+	for {
+		u := s.stk.Pop()
+		s.low[u] = math.MaxInt
+		comp = append(comp, u)
+		if u == v {
+			break
+		}
+	}
+	s.components = append(s.components, comp)
+}

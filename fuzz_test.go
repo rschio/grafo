@@ -7,7 +7,29 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/rschio/graph"
 )
+
+func FuzzStrongComponents(f *testing.F) {
+	f.Fuzz(func(t *testing.T, VV uint) {
+		V := int(VV%100_000 + 1)
+		E := rand.IntN(V*(V-1) + 1)
+		g := GenerateRandomEdges(V, E, 1)
+
+		comps1 := Tarjan(g)
+		comps2 := graph.StrongComponents(toIterator(g))
+		sortComponents(comps1)
+		sortComponents(comps2)
+
+		if !cmp.Equal(comps1, comps2) {
+			var buf bytes.Buffer
+			if err := DOT(g, &buf); err != nil {
+				t.Errorf("failed to DOT: %v", err)
+			}
+			t.Errorf("V=%d E=%d\nGraph=[%s]\ncomps1=%v\ncomps2=%v", V, E, buf.String(), comps1, comps2)
+		}
+	})
+}
 
 func FuzzShortestPaths(f *testing.F) {
 	f.Add(uint(5), int64(math.MaxInt64))
