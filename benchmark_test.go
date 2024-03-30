@@ -84,15 +84,13 @@ func BenchmarkBigBellmanFord(b *testing.B) {
 }
 
 func BenchmarkTarjan(b *testing.B) {
-	g := pathGraph(10000)
-	b.ResetTimer()
 	for range b.N {
-		_ = StrongComponents(g)
+		_ = StrongComponents(pathG)
 	}
 }
 
 func BenchmarkStrongComponent(b *testing.B) {
-	pathGIterator := toIterator(pathGraph(10000))
+	pathGIterator := graph.Sort(toIterator(pathG))
 	b.ResetTimer()
 	for range b.N {
 		_ = graph.StrongComponents(pathGIterator)
