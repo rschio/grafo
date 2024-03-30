@@ -71,7 +71,7 @@ func strongConnected[T any](g Graph[T], s *scc, v int) {
 	}
 }
 
-func SCdfsR[T any](g Graph[T], s *scc, v int) {
+func strongConnectedRecursive[T any](g Graph[T], s *scc, v int) {
 	s.visited[v] = true
 	s.low[v] = s.cnt
 	s.cnt++
@@ -80,7 +80,7 @@ func SCdfsR[T any](g Graph[T], s *scc, v int) {
 
 	for w, _ := range g.EdgesFrom(v) {
 		if !s.visited[w] {
-			SCdfsR(g, s, w)
+			strongConnectedRecursive(g, s, w)
 		}
 		minV = min(minV, s.low[w])
 	}
