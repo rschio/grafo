@@ -16,7 +16,7 @@ func FuzzStrongComponents(f *testing.F) {
 		E := rand.IntN(V*(V-1) + 1)
 		g := GenerateRandomEdges(V, E, 1)
 
-		comps1 := Tarjan(g)
+		comps1 := StrongComponents(g)
 		comps2 := graph.StrongComponents(toIterator(g))
 		sortComponents(comps1)
 		sortComponents(comps2)
