@@ -29,7 +29,6 @@
 package grafo
 
 import (
-	"math/rand/v2"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -240,30 +239,4 @@ func TestShortestPath(t *testing.T) {
 			t.Errorf("ShortestPath->dist %s", diff)
 		}
 	})
-}
-
-func BenchmarkShortestPaths(b *testing.B) {
-	n := 100
-	g := NewMutable[int64](n)
-	for i := 0; i < 2*n; i++ {
-		g.Add(rand.IntN(n), rand.IntN(n), int64(rand.Int()))
-	}
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_, _ = ShortestPaths(g, 0)
-	}
-}
-
-func BenchmarkShortestPath(b *testing.B) {
-	n := 100
-	g := NewMutable[int64](n)
-	for i := 0; i < 2*n; i++ {
-		g.Add(rand.IntN(n), rand.IntN(n), int64(rand.Int()))
-	}
-
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		_, _ = ShortestPath(g, 0, n-1)
-	}
 }
