@@ -4,15 +4,10 @@ import "math"
 
 func StrongComponents[T any](g Graph[T]) [][]int {
 	n := g.Order()
-	low := make([]int, n)
-	for i := range n {
-		low[i] = -1
-	}
-
 	s := &scc{
 		stk:     new(stack[int]),
 		visited: make([]bool, n),
-		low:     low,
+		low:     make([]int, n),
 	}
 	for v := range n {
 		if !s.visited[v] {
