@@ -2,6 +2,7 @@ package grafo
 
 import (
 	"cmp"
+	"iter"
 	"slices"
 	"testing"
 
@@ -31,6 +32,11 @@ func TestTarjan(t *testing.T) {
 	}
 }
 
+func TestStrongComponentsStackOverflow(t *testing.T) {
+	var g line = 2_000_000
+	StrongComponents(g)
+}
+
 func sortComponents(comps [][]int) {
 	for i := range comps {
 		slices.Sort(comps[i])
@@ -49,4 +55,17 @@ func toIterator[T ~int | ~int64](g Graph[T]) *graph.Mutable {
 		}
 	}
 	return h
+}
+
+type line int
+
+func (g line) Order() int { return int(g) }
+
+func (g line) EdgesFrom(v int) iter.Seq2[int, int] {
+	return func(yield func(w, weight int) bool) {
+		if v+1 >= g.Order() {
+			return
+		}
+		yield(v+1, 1)
+	}
 }
