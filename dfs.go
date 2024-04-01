@@ -47,6 +47,10 @@ func (s *stack[T]) Push(v T) {
 	s.s = append(s.s, v)
 }
 
+func (s *stack[T]) Top() T {
+	return s.s[len(s.s)-1]
+}
+
 func (s *stack[T]) Pop() T {
 	v := s.s[len(s.s)-1]
 	s.s = s.s[:len(s.s)-1]
