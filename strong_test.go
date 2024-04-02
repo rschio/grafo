@@ -10,7 +10,7 @@ import (
 	"github.com/rschio/graph"
 )
 
-func TestTarjan(t *testing.T) {
+func TestStrongComponents(t *testing.T) {
 	g := NewMutable[int64](6)
 	g.Add(0, 1, 1)
 	g.Add(1, 2, 1)
