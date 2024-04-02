@@ -56,7 +56,8 @@ type scc[T any] struct {
 func (s *scc[T]) dfsI(start int) {
 	v := start
 	s.previsit(v)
-	next, _ := iter.Pull2(s.g.EdgesFrom(v))
+	next, stop := iter.Pull2(s.g.EdgesFrom(v))
+	defer stop()
 	w, _, ok := next()
 
 	for {
@@ -67,7 +68,8 @@ func (s *scc[T]) dfsI(start int) {
 				s.iters[v] = next
 				s.P.Push(v)
 				v = w
-				next, _ = iter.Pull2(s.g.EdgesFrom(v))
+				next, stop = iter.Pull2(s.g.EdgesFrom(v))
+				defer stop()
 				// FORWARD END
 				continue
 			}
