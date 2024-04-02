@@ -19,21 +19,19 @@ func StrongComponents[T any](g Graph[T]) [][]int {
 	// changing the iterator type slows down by a factor of 10 or 20x.
 	// I choosed to slow down and keep the memory in a safe amount.
 	n := g.Order()
-	stk := new(stack[int])
-	low := make([]uint, n+1)
-
-	// Dummy.
-	stk.Push(n)
-	low[n] = 0
-
 	s := &scc[T]{
 		g:          g,
-		stk:        stk,
+		stk:        new(stack[int]),
 		P:          new(stack[int]),
 		iters:      make([]func() (int, T, bool), n),
-		low:        low,
+		low:        make([]uint, n+1),
 		components: [][]int{},
 	}
+
+	// Dummy.
+	s.stk.Push(n)
+	s.low[n] = 0
+
 	for v := range g.Order() {
 		if s.unvisited(v) {
 			s.dfsI(v)
