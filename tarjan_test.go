@@ -33,7 +33,7 @@ func TestTarjan(t *testing.T) {
 }
 
 func TestStrongComponentsStackOverflow(t *testing.T) {
-	var g line = 2_000_000
+	var g line = 3_000_000
 	StrongComponents(g)
 }
 

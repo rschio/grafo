@@ -9,6 +9,7 @@ import (
 )
 
 var complete = Sort(completeGraph(1000))
+var complete2 = Sort(completeGraph2(1000))
 var pathG = Sort(pathGraph(1000))
 var dimacsG = readDIMACS()
 
@@ -85,12 +86,12 @@ func BenchmarkBigBellmanFord(b *testing.B) {
 
 func BenchmarkTarjan(b *testing.B) {
 	for range b.N {
-		_ = StrongComponents(pathG)
+		_ = StrongComponents(complete2)
 	}
 }
 
 func BenchmarkStrongComponent(b *testing.B) {
-	pathGIterator := graph.Sort(toIterator(pathG))
+	pathGIterator := graph.Sort(toIterator(complete2))
 	b.ResetTimer()
 	for range b.N {
 		_ = graph.StrongComponents(pathGIterator)
