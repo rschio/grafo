@@ -20,7 +20,7 @@ func StrongComponents[T any](g Graph[T]) [][]int {
 	// I choosed to slow down and keep the memory in a safe amount.
 	n := g.Order()
 	stk := new(stack[int])
-	low := make([]int, n+1)
+	low := make([]uint, n+1)
 
 	// Dummy.
 	stk.Push(n)
@@ -48,9 +48,9 @@ type scc[T any] struct {
 	stk        *stack[int]
 	P          *stack[int]
 	iters      []func() (int, T, bool)
-	low        []int
+	low        []uint
 	components [][]int
-	time       int
+	time       uint
 }
 
 func (s *scc[T]) dfsI(start int) {
