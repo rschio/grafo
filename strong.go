@@ -118,9 +118,9 @@ func (s *scc[_]) postvisit(v int) {
 	for s.low[s.stk.Top()] >= s.low[v] {
 		x := s.stk.Pop()
 		comp = append(comp, x)
-		s.low[x] = math.MaxInt
+		s.low[x] = math.MaxUint
 	}
 	comp = append(comp, v)
-	s.low[v] = math.MaxInt
+	s.low[v] = math.MaxUint
 	s.components = append(s.components, comp)
 }
