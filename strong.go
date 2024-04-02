@@ -26,7 +26,7 @@ func StrongComponents[T any](g Graph[T]) [][]int {
 	stk.Push(n)
 	low[n] = 0
 
-	s := &scc2[T]{
+	s := &scc[T]{
 		g:          g,
 		stk:        stk,
 		P:          new(stack[int]),
@@ -43,7 +43,7 @@ func StrongComponents[T any](g Graph[T]) [][]int {
 	return s.components
 }
 
-type scc2[T any] struct {
+type scc[T any] struct {
 	g          Graph[T]
 	stk        *stack[int]
 	P          *stack[int]
@@ -53,7 +53,7 @@ type scc2[T any] struct {
 	time       int
 }
 
-func (s *scc2[T]) dfsI(start int) {
+func (s *scc[T]) dfsI(start int) {
 	v := start
 	s.previsit(v)
 	next, _ := iter.Pull2(s.g.EdgesFrom(v))
@@ -87,28 +87,28 @@ func (s *scc2[T]) dfsI(start int) {
 	}
 }
 
-func (s *scc2[_]) unvisited(v int) bool {
+func (s *scc[_]) unvisited(v int) bool {
 	return s.low[v] == 0
 }
 
-func (s *scc2[_]) leader(v int) bool {
+func (s *scc[_]) leader(v int) bool {
 	// Encoding trick. The leader bit is encoded
 	// as the negation of least significative bit.
 	return s.low[v]&1 == 0
 }
 
-func (s *scc2[_]) previsit(v int) {
+func (s *scc[_]) previsit(v int) {
 	s.time = s.time + 2
 	s.low[v] = s.time
 }
 
-func (s *scc2[_]) retreat(v, w int) {
+func (s *scc[_]) retreat(v, w int) {
 	if s.low[w] < s.low[v] {
 		s.low[v] = s.low[w] | 1
 	}
 }
 
-func (s *scc2[_]) postvisit(v int) {
+func (s *scc[_]) postvisit(v int) {
 	if !s.leader(v) {
 		s.stk.Push(v)
 		return
