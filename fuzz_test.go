@@ -2,6 +2,7 @@ package grafo
 
 import (
 	"bytes"
+	"iter"
 	"math"
 	"math/rand/v2"
 	"testing"
@@ -65,12 +66,53 @@ func FuzzShortestPaths(f *testing.F) {
 	})
 }
 
-//func toIterator(g Graph[int64]) graph.Iterator {
-//	it := graph.New(g.Order())
-//	for v := range g.Order() {
-//		for w, weight := range g.EdgesFrom(v) {
-//			it.AddCost(v, w, weight)
-//		}
-//	}
-//	return it
-//}
+func FuzzDFS(f *testing.F) {
+	f.Fuzz(func(t *testing.T, VV, EE uint, seed1, seed2 uint64) {
+		V := int(VV%1000) + 1
+		E := int(EE % uint((V * V)))
+		rnd := rand.New(rand.NewPCG(seed1, seed2))
+		g := generateRandomWithRand(V, E, func() int64 { return 1 }, rnd)
+
+		next1, stop1 := iter.Pull(DFS(g, 0))
+		defer stop1()
+
+		next2, stop2 := iter.Pull(dfsRec(g, 0))
+		defer stop2()
+
+		path := make([]Edge[int64], 0)
+		for {
+			e1, ok1 := next1()
+			e2, ok2 := next2()
+
+			path = append(path, e1)
+			if diff := cmp.Diff(e1, e2); diff != "" || ok1 != ok2 {
+				var buf bytes.Buffer
+				DOT(g, &buf)
+				t.Fatalf("ok1 %v ok2 %v diff: %s\npath[%v]\n%s", ok1, ok2, diff, path, buf.String())
+			}
+			if ok1 == false {
+				break
+			}
+		}
+	})
+}
+
+func dfsRec[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
+	return func(yield func(e Edge[T]) bool) {
+		visited := make([]bool, g.Order())
+		dfsR(g, visited, yield, v)
+	}
+}
+
+func dfsR[T any](g Graph[T], visited []bool, yield func(e Edge[T]) bool, v int) {
+	for w, wt := range g.EdgesFrom(v) {
+		if visited[w] {
+			continue
+		}
+		visited[w] = true
+		if !yield(Edge[T]{v, w, wt}) {
+			return
+		}
+		dfsR(g, visited, yield, w)
+	}
+}

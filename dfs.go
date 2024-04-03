@@ -29,7 +29,7 @@ func DFS[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
 					continue
 				}
 			} else {
-				if v == start {
+				if v == start && P.Len() == 0 {
 					return
 				}
 
