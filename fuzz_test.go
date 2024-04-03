@@ -11,10 +11,12 @@ import (
 )
 
 func FuzzStrongComponents(f *testing.F) {
-	f.Fuzz(func(t *testing.T, VV uint) {
+	f.Add(uint(10), uint(20), uint64(0), uint64(1))
+	f.Fuzz(func(t *testing.T, VV, EE uint, seed1, seed2 uint64) {
 		V := int(VV%100_000 + 1)
-		E := rand.IntN(V*(V-1) + 1)
-		g := GenerateRandomEdges(V, E, 1)
+		E := int(EE % uint(V*V))
+		rnd := rand.New(rand.NewPCG(seed1, seed2))
+		g := generateRandomWithRand(V, E, func() int64 { return 1 }, rnd)
 
 		comps1 := StrongComponents(g)
 		comps2 := graph.StrongComponents(toIterator(g))
