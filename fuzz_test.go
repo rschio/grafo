@@ -32,8 +32,9 @@ func FuzzStrongComponents(f *testing.F) {
 }
 
 func FuzzShortestPaths(f *testing.F) {
+	f.Add(uint(10), uint(20), InfFor[int64](), uint64(0), uint64(1))
 	f.Fuzz(func(t *testing.T, VV, EE uint, maxValue int64, seed1, seed2 uint64) {
-		V := int(VV%10 + 1) // Use a small V to test.
+		V := int(VV%500 + 1) // Use a small V to test.
 		E := int(EE % uint(V*V))
 		if maxValue <= 0 {
 			maxValue = -maxValue
