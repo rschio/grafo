@@ -43,7 +43,7 @@ import (
 type Immutable[T any] struct {
 	// edges[v] is a sorted list of v's neighbors.
 	edges [][]neighbor[T]
-	stats Stats
+	stats stats
 }
 
 type neighbor[T any] struct {
@@ -51,8 +51,8 @@ type neighbor[T any] struct {
 	weight T
 }
 
-// Stats holds basic data about an Iterator.
-type Stats struct {
+// stats holds basic data about an Iterator.
+type stats struct {
 	Size     int // Number of unique edges.
 	Multi    int // Number of duplicate edges.
 	Loops    int // Number of self-loops.
