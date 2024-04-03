@@ -6,35 +6,48 @@ import "iter"
 // in Depth First Search way, starting from vertex v.
 func DFS[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
 	return func(yield func(e Edge[T]) bool) {
-		visited := make([]bool, g.Order())
-		visited[v] = true
-		stk := new(stack[Edge[T]])
+		n := g.Order()
+		visited := make([]bool, n)
+		P := new(stack[vIter[T]])
 
-		for w, weight := range g.EdgesFrom(v) {
-			stk.Push(Edge[T]{V: v, W: w, Weight: weight})
-		}
+		start := v
+		next, stop := iter.Pull2(g.EdgesFrom(v))
+		defer stop()
+		w, weight, ok := next()
 
-		for stk.Len() > 0 {
-			edge := stk.Pop()
-			if visited[edge.W] {
-				continue
-			}
-
-			if !yield(edge) {
-				return
-			}
-
-			v = edge.W
-			visited[v] = true
-
-			for w, weight := range g.EdgesFrom(v) {
-				if visited[w] {
+		for {
+			if ok {
+				if !visited[w] {
+					visited[w] = true
+					if !yield(Edge[T]{v, w, weight}) {
+						return
+					}
+					// FORWARD
+					P.Push(vIter[T]{v, next})
+					v = w
+					next, stop = iter.Pull2(g.EdgesFrom(v))
+					defer stop()
+					// FORWARD END
 					continue
 				}
-				stk.Push(Edge[T]{V: v, W: w, Weight: weight})
+			} else {
+				if v == start {
+					return
+				}
+				// BACKWARD
+				w = v
+				vi := P.Pop()
+				v, next = vi.v, vi.iter
+				// BACKWARD END
 			}
+			w, weight, ok = next()
 		}
 	}
+}
+
+type vIter[T any] struct {
+	v    int
+	iter func() (int, T, bool)
 }
 
 type stack[T any] struct {
