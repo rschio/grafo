@@ -46,7 +46,6 @@ func ShortestPaths[T IntegerOrFloat](g Graph[T], v int) (parent []int, dist []T)
 
 func shortestPath[T IntegerOrFloat](g Graph[T], v, w int) (parent []int, dist []T) {
 	n := g.Order()
-	mature := make([]bool, n)
 	dist = make([]T, n)
 	parent = make([]int, n)
 	inf := InfFor[T]()
@@ -54,6 +53,8 @@ func shortestPath[T IntegerOrFloat](g Graph[T], v, w int) (parent []int, dist []
 		dist[i], parent[i] = inf, -1
 	}
 	dist[v] = 0
+	parent[v] = v
+	defer func(v int) { parent[v] = -1 }(v)
 
 	// Dijkstra's algorithm
 	Q := emptyPrioQueue(dist)
@@ -66,9 +67,6 @@ func shortestPath[T IntegerOrFloat](g Graph[T], v, w int) (parent []int, dist []
 			return parent, dist
 		}
 		for w, weight := range g.EdgesFrom(v) {
-			if mature[w] {
-				continue
-			}
 			// Skip NaN and negative edges.
 			if isNaN(weight) || weight < 0 {
 				continue
@@ -89,7 +87,6 @@ func shortestPath[T IntegerOrFloat](g Graph[T], v, w int) (parent []int, dist []
 				Q.Fix(w)
 			}
 		}
-		mature[v] = true
 	}
 
 	return parent, dist

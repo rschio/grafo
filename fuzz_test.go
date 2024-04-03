@@ -3,7 +3,6 @@ package grafo
 import (
 	"bytes"
 	"iter"
-	"math"
 	"math/rand/v2"
 	"testing"
 
@@ -33,28 +32,24 @@ func FuzzStrongComponents(f *testing.F) {
 }
 
 func FuzzShortestPaths(f *testing.F) {
-	f.Add(uint(5), int64(math.MaxInt64))
-	f.Fuzz(func(t *testing.T, VV uint, maxValue int64) {
-		V := int(VV%300 + 1) // Use a small V to test.
-		E := rand.IntN(V*(V-1) + 1)
-		if maxValue < 0 {
-			maxValue = -(maxValue + 1)
+	f.Fuzz(func(t *testing.T, VV, EE uint, maxValue int64, seed1, seed2 uint64) {
+		V := int(VV%10 + 1) // Use a small V to test.
+		E := int(EE % uint(V*V))
+		if maxValue <= 0 {
+			maxValue = -maxValue
+			if maxValue == 0 {
+				maxValue = 1
+			}
 		}
-		if maxValue == 0 {
-			maxValue = 1
+		rnd := rand.New(rand.NewPCG(seed1, seed2))
+		weightFn := func() int64 {
+			return rnd.Int64N(maxValue)
 		}
-		g := GenerateRandomEdges(V, E, maxValue)
-
+		g := generateRandomWithRand(V, E, weightFn, rnd)
 		v := rand.IntN(V)
 
 		_, dist1 := ShortestPaths(g, v)
 		_, dist2, _ := BellmanFord(g, v)
-		//	_, dist3 := graph.ShortestPaths(toIterator(g), v)
-		//	for i, val := range dist3 {
-		//		if val == -1 {
-		//			dist3[i] = InfFor[int64]()
-		//		}
-		//	}
 
 		if diff := cmp.Diff(dist1, dist2); diff != "" {
 			var buf bytes.Buffer
