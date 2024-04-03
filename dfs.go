@@ -6,8 +6,7 @@ import "iter"
 // in Depth First Search way, starting from vertex v.
 func DFS[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
 	return func(yield func(e Edge[T]) bool) {
-		n := g.Order()
-		visited := make([]bool, n)
+		visited := make([]bool, g.Order())
 		P := new(stack[vIter[T]])
 
 		start := v
@@ -22,23 +21,21 @@ func DFS[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
 					if !yield(Edge[T]{v, w, weight}) {
 						return
 					}
-					// FORWARD
+
 					P.Push(vIter[T]{v, next})
 					v = w
 					next, stop = iter.Pull2(g.EdgesFrom(v))
 					defer stop()
-					// FORWARD END
 					continue
 				}
 			} else {
 				if v == start {
 					return
 				}
-				// BACKWARD
+
 				w = v
 				vi := P.Pop()
 				v, next = vi.v, vi.iter
-				// BACKWARD END
 			}
 			w, weight, ok = next()
 		}
