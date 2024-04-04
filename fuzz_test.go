@@ -19,7 +19,7 @@ func FuzzStrongComponents(f *testing.F) {
 		g := generateRandomWithRand(V, E, func() int64 { return 1 }, rnd)
 
 		comps1 := StrongComponents(g)
-		comps2 := graph.StrongComponents(toIterator(g))
+		comps2 := graph.StrongComponents(g)
 		sortComponents(comps1)
 		sortComponents(comps2)
 

@@ -97,7 +97,7 @@ func (g *multigraph[T]) EdgesFrom(v int) iter.Seq2[int, T] {
 	}
 }
 
-func (g *multigraph[T]) Visit(v int, do func(w int, c int64) bool) {
+func (g *multigraph[T]) Visit(v int, do func(w int, c int64) bool) bool {
 	for _, e := range g.edges[v] {
 		wt, ok := any(e.weight).(int64)
 		if !ok {
@@ -108,8 +108,8 @@ func (g *multigraph[T]) Visit(v int, do func(w int, c int64) bool) {
 			}
 		}
 		if do(e.vertex, wt) {
-			return
+			return false
 		}
 	}
-	return
+	return false
 }
