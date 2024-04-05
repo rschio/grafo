@@ -54,17 +54,17 @@ func topsort[T any](g Graph[T], output bool) (order []int, acyclic bool) {
 	}
 
 	// Invariant: this queue holds all vertices with indegree 0.
-	queue := newBfsQueue(10)
+	queue := newQueue(10)
 	for v, degree := range indegree {
 		if degree == 0 {
-			queue.Insert(v)
+			queue.Push(v)
 		}
 	}
 
 	order = []int{}
 	vertexCount := 0
 	for queue.Len() > 0 {
-		v := queue.Remove()
+		v := queue.Pop()
 		if output {
 			order = append(order, v)
 		}
@@ -72,7 +72,7 @@ func topsort[T any](g Graph[T], output bool) (order []int, acyclic bool) {
 		for w, _ := range g.EdgesFrom(v) {
 			indegree[w]--
 			if indegree[w] == 0 {
-				queue.Insert(w)
+				queue.Push(w)
 			}
 		}
 	}

@@ -21,16 +21,16 @@ func BellmanFord[T IntegerOrFloat](g Graph[T], v int) (parent []int, dist []T, o
 
 	parent[v] = -1
 	dist[v] = 0
-	Q := newBfsQueue(n)
-	Q.Insert(v)
+	Q := newQueue(n)
+	Q.Push(v)
 	onQueue[v] = true
 
 	sentinel := n
-	Q.Insert(sentinel)
+	Q.Push(sentinel)
 
 	k := 0
 	for {
-		v = Q.Remove()
+		v = Q.Pop()
 		if v < sentinel {
 			for w, weight := range g.EdgesFrom(v) {
 				if isNaN(weight) {
@@ -41,7 +41,7 @@ func BellmanFord[T IntegerOrFloat](g Graph[T], v int) (parent []int, dist []T, o
 					dist[w] = alt
 					parent[w] = v
 					if !onQueue[w] {
-						Q.Insert(w)
+						Q.Push(w)
 						onQueue[w] = true
 					}
 				}
@@ -58,7 +58,7 @@ func BellmanFord[T IntegerOrFloat](g Graph[T], v int) (parent []int, dist []T, o
 				break
 			}
 
-			Q.Insert(sentinel)
+			Q.Push(sentinel)
 			for i := range n {
 				onQueue[i] = false
 			}
