@@ -33,6 +33,9 @@ func TestStrongComponents(t *testing.T) {
 }
 
 func TestStrongComponentsStackOverflow(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
 	var g line = 3_000_000
 	StrongComponents(g)
 }
