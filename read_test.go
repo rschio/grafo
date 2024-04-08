@@ -2,6 +2,7 @@ package grafo
 
 import (
 	"cmp"
+	"os"
 	"path/filepath"
 	"slices"
 	"testing"
@@ -66,3 +67,51 @@ func TestRead(t *testing.T) {
 		t.Errorf("got diferent edges:\n got %v\nwant %v", gotEdges, wantEdges)
 	}
 }
+
+func Test_readGr(t *testing.T) {
+	const fname = "USA-road-d.NY.gr"
+	f, err := os.Open(filepath.Join("testdata", fname))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+
+	g, err := readGr(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	wantV := 264346
+	wantE := 733846
+	if g.Order() != wantV {
+		t.Errorf("got wrong number of vertices: %d, want %d", g.Order(), wantV)
+	}
+
+	edges := 0
+	for v := range g.Order() {
+		for _, _ = range g.EdgesFrom(v) {
+			edges++
+		}
+	}
+	if edges != wantE {
+		t.Errorf("got wrong number of edges: %d, want %d", edges, wantE)
+	}
+}
+
+//func TestReadWrite(t *testing.T) {
+//	const fname = "testdata/USA-road-d.NY.gr"
+//	g, err := readGrFile(fname)
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//
+//	fOut, err := os.Create("testdata/USA.NY.out")
+//	if err != nil {
+//		t.Fatal(err)
+//	}
+//	defer fOut.Close()
+//
+//	if err := Write(g, fOut); err != nil {
+//		t.Fatal(err)
+//	}
+//}

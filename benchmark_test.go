@@ -133,9 +133,9 @@ func completeGraph(n int) *Mutable[struct{}] {
 }
 
 func readDIMACS() *Immutable[int] {
-	g, err := Read(filepath.Join("testdata", "264346_DIMACS"))
+	g, err := readGrFile(filepath.Join("testdata", "USA-road-d.NY.gr"))
 	if err != nil {
 		panic(err)
 	}
-	return Sort(g)
+	return g
 }
