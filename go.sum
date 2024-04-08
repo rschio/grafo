@@ -2,5 +2,7 @@ github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/rschio/graph v0.0.0-20170921192928-40eb135c0b26 h1:bG+1MtPdb+bXXjIpv8yzkR9++iAW6Ge9V7ngfFTJCXQ=
 github.com/rschio/graph v0.0.0-20170921192928-40eb135c0b26/go.mod h1:PKZbu5n5kIc0Xmqe7hCbRyDYV5aZ0mVuGy49FJ0OrTQ=
+github.com/rschio/graph v0.0.0-20221021025812-7f9d32b21e20 h1:ArNvfi3HEje1md7dijQxzZ4oLvZXLSOc8aTHdcvExw8=
+github.com/rschio/graph v0.0.0-20221021025812-7f9d32b21e20/go.mod h1:PKZbu5n5kIc0Xmqe7hCbRyDYV5aZ0mVuGy49FJ0OrTQ=
 github.com/yourbasic/graph v0.0.0-20210606180040-8ecfec1c2869 h1:7v7L5lsfw4w8iqBBXETukHo4IPltmD+mWoLRYUmeGN8=
 github.com/yourbasic/graph v0.0.0-20210606180040-8ecfec1c2869/go.mod h1:Rfzr+sqaDreiCaoQbFCu3sTXxeFq/9kXRuyOoSlGQHE=
