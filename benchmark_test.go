@@ -4,14 +4,83 @@ import (
 	"math/rand/v2"
 	"path/filepath"
 	"testing"
-
-	"github.com/rschio/graph"
 )
 
 var complete = Sort(completeGraph(1000))
 var complete2 = Sort(completeGraph2(1000))
 var pathG = Sort(pathGraph(1000))
-var dimacsG = readDIMACS()
+var dimacsG = readDIMACS("USA-road-d.NY.gr")
+
+func BenchmarkBellmanFord(b *testing.B) {
+	benchmarks := []struct {
+		name string
+		g    *Immutable[int]
+	}{
+		{"Normal", pathG},
+		{"Big", dimacsG},
+	}
+	for _, bb := range benchmarks {
+		b.Run(bb.name, func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				_, _, _ = BellmanFord(bb.g, 0)
+			}
+		})
+	}
+}
+
+func BenchmarkShortestPaths(b *testing.B) {
+	benchmarks := []struct {
+		name string
+		g    *Immutable[int]
+	}{
+		{"Normal", pathG},
+		{"Big", dimacsG},
+	}
+
+	for _, bb := range benchmarks {
+		b.Run(bb.name, func(b *testing.B) {
+			for range b.N {
+				_, _ = ShortestPaths(bb.g, 0)
+			}
+		})
+	}
+}
+
+func BenchmarkShortestPath(b *testing.B) {
+	benchmarks := []struct {
+		name string
+		g    *Immutable[int]
+	}{
+		{"Normal", pathG},
+		{"Big", dimacsG},
+	}
+
+	for _, bb := range benchmarks {
+		b.Run(bb.name, func(b *testing.B) {
+			for range b.N {
+				_, _ = ShortestPath(bb.g, 0, bb.g.Order()-1)
+			}
+		})
+	}
+}
+
+func BenchmarkStrongComponents(b *testing.B) {
+	benchmarks := []struct {
+		name string
+		g    *Immutable[int]
+	}{
+		{"Complete2", complete2},
+		{"Big", dimacsG},
+	}
+
+	for _, bb := range benchmarks {
+		b.Run(bb.name, func(b *testing.B) {
+			for range b.N {
+				_ = StrongComponents(bb.g)
+			}
+		})
+	}
+}
 
 func BenchmarkBFS(b *testing.B) {
 	for range b.N {
@@ -48,60 +117,10 @@ func BenchmarkRange(b *testing.B) {
 	}
 }
 
-func BenchmarkShortestPaths(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		_, _ = ShortestPaths(pathG, 0)
-	}
-}
-
-func BenchmarkShortestPath(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		_, _ = ShortestPath(pathG, 0, pathG.Order()-1)
-	}
-}
-
-func BenchmarkBellmanFord(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		_, _, _ = BellmanFord(pathG, 0)
-	}
-}
-
-func BenchmarkBigShortestPaths(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		_, _ = ShortestPaths(dimacsG, 0)
-	}
-}
-
-func BenchmarkBigShortestPath(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		_, _ = ShortestPath(dimacsG, 0, pathG.Order()-1)
-	}
-}
-
-func BenchmarkBigBellmanFord(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		_, _, _ = BellmanFord(dimacsG, 0)
-	}
-}
-
-func BenchmarkTarjan(b *testing.B) {
-	for range b.N {
-		_ = StrongComponents(complete2)
-	}
-}
-
-func BenchmarkStrongComponent(b *testing.B) {
-	pathGIterator := graph.Sort(toIterator(complete2))
-	b.ResetTimer()
-	for range b.N {
-		_ = graph.StrongComponents(pathGIterator)
-	}
-}
-
-func pathGraph(n int) *Mutable[int64] {
-	g := NewMutable[int64](n)
+func pathGraph(n int) *Mutable[int] {
+	g := NewMutable[int](n)
 	for i := 0; i < 2*n; i++ {
-		g.Add(rand.IntN(n), rand.IntN(n), int64(rand.Int()))
+		g.Add(rand.IntN(n), rand.IntN(n), rand.Int())
 	}
 	return g
 }
@@ -132,8 +151,8 @@ func completeGraph(n int) *Mutable[struct{}] {
 	return g
 }
 
-func readDIMACS() *Immutable[int] {
-	g, err := readGrFile(filepath.Join("testdata", "USA-road-d.NY.gr"))
+func readDIMACS(fname string) *Immutable[int] {
+	g, err := readGrFile(filepath.Join("testdata", fname))
 	if err != nil {
 		panic(err)
 	}
