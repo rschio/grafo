@@ -28,7 +28,7 @@ func TestStrongComponents(t *testing.T) {
 			}
 
 			comps1 := StrongComponents(g)
-			comps2 := graph.StrongComponents(toIterator(g))
+			comps2 := graph.StrongComponents(g)
 
 			sortComponents(comps1)
 			sortComponents(comps2)
@@ -55,16 +55,6 @@ func sortComponents(comps [][]int) {
 		// a and b have at least one element.
 		return cmp.Compare(a[0], b[0])
 	})
-}
-
-func toIterator[T ~int | ~int64](g Graph[T]) *graph.Mutable {
-	h := graph.New(g.Order())
-	for v := range g.Order() {
-		for w, weight := range g.EdgesFrom(v) {
-			h.AddCost(v, w, int64(weight))
-		}
-	}
-	return h
 }
 
 type line int
