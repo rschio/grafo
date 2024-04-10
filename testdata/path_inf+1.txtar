@@ -1,8 +1,0 @@
--- inf+1.graph --
-v 3
-0 1 1
-1 2 inf
--- inf+1.result --
-0 2
-0 1 2
-inf
