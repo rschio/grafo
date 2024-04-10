@@ -29,95 +29,91 @@
 package grafo
 
 import (
+	"bytes"
+	"path/filepath"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/rschio/grafo/internal/testutil"
+	"golang.org/x/tools/txtar"
 )
 
+func TestShortestPath(t *testing.T) {
+	tests := pathTestCases[int](t, "path.txtar")
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			path, dist := ShortestPath(tc.g, tc.v, tc.w)
+			if diff := cmp.Diff(path, tc.wantPath); diff != "" {
+				t.Errorf("ShortestPath->path Diff: %s", diff)
+			}
+			if diff := cmp.Diff(dist, tc.wantDist); diff != "" {
+				t.Errorf("ShortestPath->dist Diff: %v", diff)
+			}
+		})
+	}
+}
+
+func TestShortestPaths(t *testing.T) {
+	tests := pathsTestCases[int](t, "paths.txtar")
+	for name, tc := range tests {
+		t.Run(name, func(t *testing.T) {
+			parent, dist := ShortestPaths(tc.g, 0)
+			if diff := cmp.Diff(parent, tc.wantParent); diff != "" {
+				t.Errorf("ShortestPaths->parent %s", diff)
+			}
+			if diff := cmp.Diff(dist, tc.wantDist); diff != "" {
+				t.Errorf("ShortestPaths->dist %s", diff)
+			}
+		})
+	}
+}
+
 func TestShortestPathInf(t *testing.T) {
-	t.Run("base", func(t *testing.T) {
-		inf := InfFor[int]()
-		g := NewMutable[int](3)
-		g.Add(0, 2, inf)
-
-		want := []int{0, 2}
-		path, dist := ShortestPath(g, 0, 2)
-		if diff := cmp.Diff(path, want); diff != "" {
-			t.Errorf("should return a path. Diff: %s", diff)
-		}
-		if dist != inf {
-			t.Errorf("should return an infinite dist. Got %v", dist)
-		}
-	})
-
-	t.Run("loop", func(t *testing.T) {
-		inf := InfFor[int]()
-		g := NewMutable[int](4)
-		g.Add(0, 1, 1)
-		g.Add(1, 2, 1)
-		g.Add(2, 0, 1)
-		g.Add(2, 3, inf)
-		parent, dist := ShortestPaths(g, 0)
-		wantParent := []int{-1, 0, 1, 2}
-		wantDist := []int{0, 1, 2, inf}
-		if diff := cmp.Diff(parent, wantParent); diff != "" {
-			t.Errorf("ShortestPath->path %s", diff)
-		}
-		if diff := cmp.Diff(dist, wantDist); diff != "" {
-			t.Errorf("ShortestPath->dist %s", diff)
-		}
-	})
-
 	t.Run("int inf + 1", func(t *testing.T) {
-		inf := InfFor[int]()
-		g := NewMutable[int](3)
-		g.Add(0, 1, 1)
-		g.Add(1, 2, inf)
-
-		want := []int{0, 1, 2}
-		path, dist := ShortestPath(g, 0, 2)
-		if diff := cmp.Diff(path, want); diff != "" {
-			t.Errorf("should return a path. Diff: %s", diff)
-		}
-		if dist != inf {
-			t.Errorf("should return an infinite dist. Got %v", dist)
+		tests := pathTestCases[int](t, "path_inf+1.txtar")
+		for name, tc := range tests {
+			t.Run(name, func(t *testing.T) {
+				path, dist := ShortestPath(tc.g, tc.v, tc.w)
+				if diff := cmp.Diff(path, tc.wantPath); diff != "" {
+					t.Errorf("ShortestPath->path Diff: %s", diff)
+				}
+				if diff := cmp.Diff(dist, tc.wantDist); diff != "" {
+					t.Errorf("ShortestPath->dist Diff: %v", diff)
+				}
+			})
 		}
 	})
-
 	t.Run("uint inf + 1", func(t *testing.T) {
-		inf := InfFor[uint]()
-		g := NewMutable[uint](3)
-		g.Add(0, 1, 1)
-		g.Add(1, 2, inf)
-
-		want := []int{0, 1, 2}
-		path, dist := ShortestPath(g, 0, 2)
-		if diff := cmp.Diff(path, want); diff != "" {
-			t.Errorf("should return a path. Diff: %s", diff)
-		}
-		if dist != inf {
-			t.Errorf("should return an infinite dist. Got %v", dist)
+		tests := pathTestCases[uint](t, "path_inf+1.txtar")
+		for name, tc := range tests {
+			t.Run(name, func(t *testing.T) {
+				path, dist := ShortestPath(tc.g, tc.v, tc.w)
+				if diff := cmp.Diff(path, tc.wantPath); diff != "" {
+					t.Errorf("ShortestPath->path Diff: %s", diff)
+				}
+				if diff := cmp.Diff(dist, tc.wantDist); diff != "" {
+					t.Errorf("ShortestPath->dist Diff: %v", diff)
+				}
+			})
 		}
 	})
-
 	t.Run("float inf + 1", func(t *testing.T) {
-		inf := InfFor[float64]()
-		g := NewMutable[float64](3)
-		g.Add(0, 1, 1)
-		g.Add(1, 2, inf)
-
-		want := []int{0, 1, 2}
-		path, dist := ShortestPath(g, 0, 2)
-		if diff := cmp.Diff(path, want); diff != "" {
-			t.Errorf("should return a path. Diff: %s", diff)
-		}
-		if dist != inf {
-			t.Errorf("should return an infinite dist. Got %v", dist)
+		tests := pathTestCases[float64](t, "path_inf+1.txtar")
+		for name, tc := range tests {
+			t.Run(name, func(t *testing.T) {
+				path, dist := ShortestPath(tc.g, tc.v, tc.w)
+				if diff := cmp.Diff(path, tc.wantPath); diff != "" {
+					t.Errorf("ShortestPath->path Diff: %s", diff)
+				}
+				if diff := cmp.Diff(dist, tc.wantDist); diff != "" {
+					t.Errorf("ShortestPath->dist Diff: %v", diff)
+				}
+			})
 		}
 	})
 }
 
-func TestShortestPath(t *testing.T) {
+func TestShortestPathTypes(t *testing.T) {
 	t.Run("float64", func(t *testing.T) {
 		g := NewMutable[float64](6)
 		g.Add(0, 1, 1.0)
@@ -216,27 +212,109 @@ func TestShortestPath(t *testing.T) {
 		}
 
 	})
+}
 
-	t.Run("ime", func(t *testing.T) {
-		g := NewMutable[int](6)
-		g.Add(0, 1, 10)
-		g.Add(0, 2, 20)
-		g.Add(1, 3, 70)
-		g.Add(1, 4, 80)
-		g.Add(2, 3, 50)
-		g.Add(2, 4, 60)
-		g.Add(3, 1, 0)
-		g.Add(3, 5, 10)
-		g.Add(4, 5, 10)
+type pathsTestCase[T IntegerOrFloat] struct {
+	g          Graph[T]
+	wantParent []int
+	wantDist   []T
+}
 
-		parent, dist := ShortestPaths(g, 0)
-		wantParent := []int{-1, 0, 0, 2, 2, 3}
-		wantDist := []int{0, 10, 20, 70, 80, 80}
-		if diff := cmp.Diff(parent, wantParent); diff != "" {
-			t.Errorf("ShortestPath->parent %s", diff)
+func pathsTestCases[T IntegerOrFloat](t *testing.T, fname string) map[string]pathsTestCase[T] {
+	archive, err := txtar.ParseFile(filepath.Join("testdata", fname))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := make(map[string]pathsTestCase[T])
+	for _, f := range archive.Files {
+		ext := filepath.Ext(f.Name)
+		name := f.Name[:len(f.Name)-len(ext)]
+		switch ext {
+		case ".graph":
+			g, err := testutil.ParseGraph[T](bytes.NewReader(f.Data))
+			if err != nil {
+				t.Fatalf("failed to read graph test case: %v", err)
+			}
+			tc := tests[name]
+			tc.g = g
+			tests[name] = tc
+		case ".result":
+			lines := bytes.SplitN(f.Data, []byte("\n"), 2)
+			if len(lines) < 2 {
+				t.Fatalf("failed to read result: %q", f.Data)
+			}
+			parent, err := testutil.ParseSlice[int](string(lines[0]))
+			if err != nil {
+				t.Fatalf("failed to read parent result: %v: %q", err, f.Data)
+			}
+			dist, err := testutil.ParseSlice[T](string(lines[1]))
+			if err != nil {
+				t.Fatalf("failed to read dist result: %v: %q", err, f.Data)
+			}
+
+			tc := tests[name]
+			tc.wantParent = parent
+			tc.wantDist = dist
+			tests[name] = tc
 		}
-		if diff := cmp.Diff(dist, wantDist); diff != "" {
-			t.Errorf("ShortestPath->dist %s", diff)
+	}
+
+	return tests
+}
+
+type pathTestCase[T IntegerOrFloat] struct {
+	g        Graph[T]
+	v, w     int
+	wantPath []int
+	wantDist T
+}
+
+func pathTestCases[T IntegerOrFloat](t *testing.T, fname string) map[string]pathTestCase[T] {
+	archive, err := txtar.ParseFile(filepath.Join("testdata", fname))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	tests := make(map[string]pathTestCase[T])
+	for _, f := range archive.Files {
+		ext := filepath.Ext(f.Name)
+		name := f.Name[:len(f.Name)-len(ext)]
+		switch ext {
+		case ".graph":
+			g, err := testutil.ParseGraph[T](bytes.NewReader(f.Data))
+			if err != nil {
+				t.Fatalf("failed to read graph test case: %v", err)
+			}
+			tc := tests[name]
+			tc.g = g
+			tests[name] = tc
+		case ".result":
+			lines := bytes.SplitN(f.Data, []byte("\n"), 3)
+			if len(lines) < 3 {
+				t.Fatalf("failed to read result: %q", f.Data)
+			}
+			vw, err := testutil.ParseSlice[int](string(lines[0]))
+			if err != nil || len(vw) != 2 {
+				t.Fatalf("failed to read vw result: %v: %q", err, f.Data)
+			}
+			path, err := testutil.ParseSlice[int](string(lines[1]))
+			if err != nil {
+				t.Fatalf("failed to read parent result: %v: %q", err, f.Data)
+			}
+			dist, err := testutil.ParseSlice[T](string(lines[2]))
+			if err != nil || len(dist) != 1 {
+				t.Fatalf("failed to read dist result: %v: %q", err, f.Data)
+			}
+
+			tc := tests[name]
+			tc.v = vw[0]
+			tc.w = vw[1]
+			tc.wantPath = path
+			tc.wantDist = dist[0]
+			tests[name] = tc
 		}
-	})
+	}
+
+	return tests
 }

@@ -1,0 +1,14 @@
+ShortestPath tests
+
+Result structure:
+v w // ShortestPath(g, v, w)
+path
+dist
+
+-- base.graph --
+v 3
+0 2 inf
+-- base.result --
+0 2
+0 2
+inf

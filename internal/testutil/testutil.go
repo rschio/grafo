@@ -10,6 +10,20 @@ import (
 	"strings"
 )
 
+func ParseSlice[T any](line string) ([]T, error) {
+	s := make([]T, 0)
+	parse := weightFunc[T]()
+	for _, f := range strings.Fields(line) {
+		v, err := parse(f)
+		if err != nil {
+			return nil, err
+		}
+		s = append(s, v)
+	}
+
+	return s, nil
+}
+
 func ParseGraph[T any](r io.Reader) (*Multigraph[T], error) {
 	sc := bufio.NewScanner(r)
 
