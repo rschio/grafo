@@ -133,6 +133,7 @@ func parseUint[T any](uintInf uint64, bitSize int) func(s string) (T, error) {
 			if err != nil {
 				return *new(T), err
 			}
+			v = min(v, uintInf)
 		}
 		typ := reflect.TypeFor[T]()
 		val := reflect.ValueOf(v).Convert(typ)
@@ -146,12 +147,18 @@ func parseInt[T any](intInf int64, bitSize int) func(s string) (T, error) {
 		if s == "inf" || s == "+inf" {
 			v = intInf
 		} else if s == "-inf" {
-			v = intInf + 1
+			v = -intInf - 1
 		} else {
 			var err error
 			v, err = strconv.ParseInt(s, 10, bitSize)
 			if err != nil {
 				return *new(T), err
+			}
+
+			if v >= 0 {
+				v = min(v, intInf)
+			} else {
+				v = max(v, -intInf-1)
 			}
 		}
 		typ := reflect.TypeFor[T]()
