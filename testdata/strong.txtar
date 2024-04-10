@@ -10,3 +10,18 @@ v 6
 3 5 0
 4 5 0
 5 4 0
+-- strong_0.graph --
+v 0
+-- strong_1.graph --
+v 1
+-- strong_2.graph --
+v 2
+0 1 0
+-- strong_3.graph --
+v 2
+-- strong_4.graph --
+v 2
+0 0 0
+1 1 0
+0 1 0
+1 0 0
