@@ -10,6 +10,11 @@ import (
 	"strings"
 )
 
+func ParseValue[T any](line string) (T, error) {
+	parse := weightFunc[T]()
+	return parse(line)
+}
+
 func ParseSlice[T any](line string) ([]T, error) {
 	s := make([]T, 0)
 	parse := weightFunc[T]()
@@ -97,6 +102,8 @@ func weightFunc[T any]() func(string) (T, error) {
 	case reflect.Float64:
 		return parseFloat[T](64)
 
+	case reflect.Bool:
+		return parseBool[T]()
 	case reflect.Struct:
 		if reflect.ValueOf(*new(T)).NumField() != 0 {
 			break
@@ -114,6 +121,19 @@ func weightFunc[T any]() func(string) (T, error) {
 		return *new(T), fmt.Errorf("parseWeight not implemented")
 	}
 
+}
+
+func parseBool[T any]() func(s string) (T, error) {
+	return func(s string) (T, error) {
+		var v bool
+		v, err := strconv.ParseBool(s)
+		if err != nil {
+			return *new(T), err
+		}
+		typ := reflect.TypeFor[T]()
+		val := reflect.ValueOf(v).Convert(typ)
+		return val.Interface().(T), nil
+	}
 }
 
 func parseFloat[T any](bitSize int) func(s string) (T, error) {
