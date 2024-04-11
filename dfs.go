@@ -7,34 +7,33 @@ import "iter"
 func DFS[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
 	return func(yield func(e Edge[T]) bool) {
 		visited := make([]bool, g.Order())
-		P := new(stack[vIter[T]])
+		visited[v] = true
+		path := new(stack[vIter[T]])
 
-		start := v
 		next, stop := iter.Pull2(g.EdgesFrom(v))
 		defer stop()
 		w, weight, ok := next()
 
 		for {
-			if ok {
-				if !visited[w] {
-					visited[w] = true
-					if !yield(Edge[T]{v, w, weight}) {
-						return
-					}
-
-					P.Push(vIter[T]{v, next})
-					v = w
-					next, stop = iter.Pull2(g.EdgesFrom(v))
-					defer stop()
-					continue
+			switch {
+			case ok && !visited[w]:
+				if !yield(Edge[T]{v, w, weight}) {
+					return
 				}
-			} else {
-				if v == start && P.Len() == 0 {
+				visited[w] = true
+
+				path.Push(vIter[T]{v, next})
+				v = w
+				next, stop = iter.Pull2(g.EdgesFrom(v))
+				defer stop()
+				continue
+			case !ok:
+				if path.Len() == 0 {
 					return
 				}
 
 				w = v
-				vi := P.Pop()
+				vi := path.Pop()
 				v, next = vi.v, vi.iter
 			}
 			w, weight, ok = next()

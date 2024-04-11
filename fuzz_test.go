@@ -94,23 +94,3 @@ func FuzzDFS(f *testing.F) {
 		}
 	})
 }
-
-func dfsRec[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
-	return func(yield func(e Edge[T]) bool) {
-		visited := make([]bool, g.Order())
-		dfsR(g, visited, yield, v)
-	}
-}
-
-func dfsR[T any](g Graph[T], visited []bool, yield func(e Edge[T]) bool, v int) {
-	for w, wt := range g.EdgesFrom(v) {
-		if visited[w] {
-			continue
-		}
-		visited[w] = true
-		if !yield(Edge[T]{v, w, wt}) {
-			return
-		}
-		dfsR(g, visited, yield, w)
-	}
-}
