@@ -87,6 +87,10 @@ func TestDFSPossibleTrees(t *testing.T) {
 }
 
 func TestDFSExhaustion(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+
 	archive, err := txtar.ParseFile(filepath.Join("testdata", "exhaust5.txtar"))
 	if err != nil {
 		log.Fatal(err)
@@ -94,7 +98,7 @@ func TestDFSExhaustion(t *testing.T) {
 
 	for _, f := range archive.Files {
 		for v := range 5 {
-			t.Run(f.Name+"_v"+strconv.Itoa(v), func(t *testing.T) {
+			func() {
 				gg, err := graphFromFile(f.Data)
 				if err != nil {
 					log.Fatal(err)
@@ -114,13 +118,14 @@ func TestDFSExhaustion(t *testing.T) {
 
 					path = append(path, e1)
 					if diff := cmp.Diff(e1, e2); diff != "" || ok1 != ok2 {
-						t.Fatalf("ok1 %v ok2 %v diff: %s\npath: %v", ok1, ok2, diff, path)
+						t.Errorf("%s_%d: ok1 %v ok2 %v diff: %s\npath: %v", f.Name, v, ok1, ok2, diff, path)
+						return
 					}
 					if ok1 == false {
-						break
+						return
 					}
 				}
-			})
+			}()
 		}
 	}
 }

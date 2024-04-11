@@ -14,6 +14,9 @@ fuzz:
 test:
 	GOEXPERIMENT=rangefunc go test -count=1 ./...
 
+testshort:
+	GOEXPERIMENT=rangefunc go test -short -count=1 ./...
+
 test_cover:
 	GOEXPERIMENT=rangefunc go test -coverprofile=c.out -count=1 ./...
 
