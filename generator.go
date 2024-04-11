@@ -108,7 +108,7 @@ func (g *multigraph[T]) Visit(v int, do func(w int, c int64) bool) bool {
 			}
 		}
 		if do(e.vertex, wt) {
-			return false
+			return true
 		}
 	}
 	return false
