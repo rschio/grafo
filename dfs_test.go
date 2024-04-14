@@ -99,11 +99,10 @@ func TestDFSExhaustion(t *testing.T) {
 	for _, f := range archive.Files {
 		for v := range 5 {
 			func() {
-				gg, err := graphFromFile(f.Data)
+				g, err := graphFromFile(f.Data)
 				if err != nil {
 					log.Fatal(err)
 				}
-				g := Sort(gg)
 
 				next1, stop1 := iter.Pull(DFS(g, v))
 				defer stop1()
@@ -151,7 +150,7 @@ func dfsR[T any](g Graph[T], visited []bool, yield func(e Edge[T]) bool, v int) 
 	}
 }
 
-func graphFromFile(data []byte) (*Mutable[int], error) {
+func graphFromFile(data []byte) (*multigraph[int], error) {
 	lines := strings.Split(string(data), "\n")
 	first := true
 	allNums := make([]int, 0)
@@ -184,7 +183,7 @@ func graphFromFile(data []byte) (*Mutable[int], error) {
 		return nil, fmt.Errorf("malformed file, odd number of vertices doesn't form edges")
 	}
 
-	g := NewMutable[int](V)
+	g := newMultigraph[int](V)
 	for i := 0; i < len(allNums); i = i + 2 {
 		g.Add(allNums[i], allNums[i+1], 0)
 	}

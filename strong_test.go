@@ -3,11 +3,14 @@ package grafo
 import (
 	"cmp"
 	"iter"
+	"log"
+	"path/filepath"
 	"slices"
 	"testing"
 
 	gcmp "github.com/google/go-cmp/cmp"
 	"github.com/rschio/graph"
+	"golang.org/x/tools/txtar"
 )
 
 func TestStrongComponents(t *testing.T) {
@@ -37,6 +40,31 @@ func TestStrongComponentsStackOverflow(t *testing.T) {
 	}
 	var g line = 3_000_000
 	StrongComponents(g)
+}
+
+func TestStrongComponentsExhaust(t *testing.T) {
+	if testing.Short() {
+		t.Skip()
+	}
+
+	archive, err := txtar.ParseFile(filepath.Join("testdata", "exhaust5.txtar"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, f := range archive.Files {
+		g, err := graphFromFile(f.Data)
+		if err != nil {
+			log.Fatal(err)
+		}
+		comps1 := StrongComponents(g)
+		comps2 := graph.StrongComponents(g)
+		sortComponents(comps1)
+		sortComponents(comps2)
+		if !gcmp.Equal(comps1, comps2) {
+			t.Errorf("%s: got %v\nwant%v\n", f.Name, comps1, comps2)
+		}
+	}
 }
 
 func sortComponents(comps [][]int) {
