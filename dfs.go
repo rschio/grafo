@@ -32,7 +32,6 @@ func DFS[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
 					return
 				}
 
-				w = v
 				vi := path.Pop()
 				v, next = vi.v, vi.iter
 			}
