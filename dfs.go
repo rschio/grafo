@@ -16,6 +16,9 @@ func DFS[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
 
 		for {
 			switch {
+			case ok && visited[w]:
+				w, weight, ok = next()
+
 			case ok && !visited[w]:
 				if !yield(Edge[T]{v, w, weight}) {
 					return
@@ -26,16 +29,15 @@ func DFS[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
 				v = w
 				next, stop = iter.Pull2(g.EdgesFrom(v))
 				defer stop()
-				continue
+
 			case !ok:
 				if path.Len() == 0 {
 					return
 				}
-
 				vi := path.Pop()
 				v, next = vi.v, vi.iter
+				w, weight, ok = next()
 			}
-			w, weight, ok = next()
 		}
 	}
 }
