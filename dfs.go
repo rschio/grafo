@@ -16,7 +16,7 @@ func DFS[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
 
 func DFSPrevisit[T any](g Graph[T], v int) iter.Seq[int] {
 	return func(yield func(v int) bool) {
-		if v >= g.Order() {
+		if v < 0 || v >= g.Order() {
 			panic("vertex out of range: " + strconv.Itoa(v))
 		}
 
