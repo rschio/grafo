@@ -63,6 +63,33 @@ func TestDFSPrevisit(t *testing.T) {
 	for _ = range DFSPrevisit(g, 0) {
 		break
 	}
+
+	t.Run("vertex out of range +", func(t *testing.T) {
+		defer func() {
+			recover()
+		}()
+
+		g := newMultigraph[struct{}](2)
+		wt := struct{}{}
+		g.Add(0, 1, wt)
+
+		for _ = range DFSPrevisit(g, 2) {
+			t.Fatal("should panic before this")
+		}
+	})
+	t.Run("vertex out of range -", func(t *testing.T) {
+		defer func() {
+			recover()
+		}()
+
+		g := newMultigraph[struct{}](2)
+		wt := struct{}{}
+		g.Add(0, 1, wt)
+
+		for _ = range DFSPrevisit(g, -1) {
+			t.Fatal("should panic before this")
+		}
+	})
 }
 
 func TestDFS(t *testing.T) {
