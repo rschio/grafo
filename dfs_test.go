@@ -33,6 +33,11 @@ func TestDFSPostvisit(t *testing.T) {
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("posvisit diff %s", diff)
 	}
+
+	// Test if iterator respects the break.
+	for _ = range DFSPostvisit(g, 0) {
+		break
+	}
 }
 
 func TestDFSPrevisit(t *testing.T) {
@@ -53,9 +58,26 @@ func TestDFSPrevisit(t *testing.T) {
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("posvisit diff %s", diff)
 	}
+
+	// Test if iterator respects the break.
+	for _ = range DFSPrevisit(g, 0) {
+		break
+	}
 }
 
 func TestDFS(t *testing.T) {
+	t.Run("break", func(t *testing.T) {
+		g := NewMutable[struct{}](6)
+		wt := struct{}{}
+		g.Add(0, 1, wt)
+		g.Add(0, 2, wt)
+
+		// Test if iterator respects the break.
+		for _ = range DFS(g, 0) {
+			break
+		}
+	})
+
 	t.Run("test1", func(t *testing.T) {
 		g := NewMutable[struct{}](6)
 		wt := struct{}{}
