@@ -9,7 +9,8 @@ import (
 // in Depth First Search way, starting from vertex v.
 func DFS[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
 	return func(yield func(e Edge[T]) bool) {
-		dfs(g, v, yield, func(int) bool { return true })
+		noop := func(int) bool { return true }
+		dfs(g, v, yield, noop)
 	}
 }
 
@@ -26,13 +27,15 @@ func DFSPrevisit[T any](g Graph[T], v int) iter.Seq[int] {
 		previsit := func(e Edge[T]) bool {
 			return yield(e.W)
 		}
-		dfs(g, v, previsit, func(int) bool { return true })
+		noop := func(int) bool { return true }
+		dfs(g, v, previsit, noop)
 	}
 }
 
 func DFSPostvisit[T any](g Graph[T], v int) iter.Seq[int] {
 	return func(yield func(v int) bool) {
-		dfs(g, v, func(Edge[T]) bool { return true }, yield)
+		noop := func(Edge[T]) bool { return true }
+		dfs(g, v, noop, yield)
 	}
 }
 
