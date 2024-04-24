@@ -1,43 +1,76 @@
 package grafo
 
-import "iter"
+import (
+	"iter"
+	"strconv"
+)
 
 // DFS returns an iterator of edges that traverse the graph
 // in Depth First Search way, starting from vertex v.
 func DFS[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
 	return func(yield func(e Edge[T]) bool) {
-		visited := make([]bool, g.Order())
-		visited[v] = true
-		path := new(stack[vIter[T]])
+		dfs(g, v, yield, func(int) bool { return true })
+	}
+}
 
-		next, stop := iter.Pull2(g.EdgesFrom(v))
-		defer stop()
-		w, weight, ok := next()
+func DFSPrevisit[T any](g Graph[T], v int) iter.Seq[int] {
+	return func(yield func(v int) bool) {
+		if v >= g.Order() {
+			panic("vertex out of range: " + strconv.Itoa(v))
+		}
 
-		for {
-			switch {
-			case ok && visited[w]:
-				w, weight, ok = next()
+		if !yield(v) {
+			return
+		}
 
-			case ok && !visited[w]:
-				if !yield(Edge[T]{v, w, weight}) {
-					return
-				}
-				visited[w] = true
+		previsit := func(e Edge[T]) bool {
+			return yield(e.W)
+		}
+		dfs(g, v, previsit, func(int) bool { return true })
+	}
+}
 
-				path.Push(vIter[T]{v, next})
-				v = w
-				next, stop = iter.Pull2(g.EdgesFrom(v))
-				defer stop()
+func DFSPostvisit[T any](g Graph[T], v int) iter.Seq[int] {
+	return func(yield func(v int) bool) {
+		dfs(g, v, func(Edge[T]) bool { return true }, yield)
+	}
+}
 
-			case !ok:
-				if path.Len() == 0 {
-					return
-				}
-				vi := path.Pop()
-				v, next = vi.v, vi.iter
-				w, weight, ok = next()
+func dfs[T any](g Graph[T], v int, previsit func(e Edge[T]) bool, posvisit func(v int) bool) {
+	visited := make([]bool, g.Order())
+	visited[v] = true
+	path := new(stack[vIter[T]])
+
+	next, stop := iter.Pull2(g.EdgesFrom(v))
+	defer stop()
+	w, weight, ok := next()
+
+	for {
+		switch {
+		case ok && visited[w]:
+			w, weight, ok = next()
+
+		case ok && !visited[w]:
+			if !previsit(Edge[T]{v, w, weight}) {
+				return
 			}
+			visited[w] = true
+
+			path.Push(vIter[T]{v, next})
+			v = w
+			next, stop = iter.Pull2(g.EdgesFrom(v))
+			defer stop()
+
+		case !ok:
+			if !posvisit(v) {
+				return
+			}
+			if path.Len() == 0 {
+				return
+			}
+			vi := path.Pop()
+			v, next = vi.v, vi.iter
+			w, weight, ok = next()
 		}
 	}
 }

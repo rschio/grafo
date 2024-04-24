@@ -15,6 +15,46 @@ import (
 	"golang.org/x/tools/txtar"
 )
 
+func TestDFSPostvisit(t *testing.T) {
+	g := newMultigraph[struct{}](6)
+	wt := struct{}{}
+	g.Add(0, 1, wt)
+	g.Add(0, 2, wt)
+	g.Add(1, 3, wt)
+	g.Add(1, 4, wt)
+	g.Add(2, 5, wt)
+
+	want := []int{3, 4, 1, 5, 2, 0}
+	got := []int{}
+	for v := range DFSPostvisit(g, 0) {
+		got = append(got, v)
+	}
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("posvisit diff %s", diff)
+	}
+}
+
+func TestDFSPrevisit(t *testing.T) {
+	g := newMultigraph[struct{}](6)
+	wt := struct{}{}
+	g.Add(0, 1, wt)
+	g.Add(0, 2, wt)
+	g.Add(1, 3, wt)
+	g.Add(1, 4, wt)
+	g.Add(2, 5, wt)
+
+	want := []int{0, 1, 3, 4, 2, 5}
+	got := []int{}
+	for v := range DFSPrevisit(g, 0) {
+		got = append(got, v)
+	}
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("posvisit diff %s", diff)
+	}
+}
+
 func TestDFS(t *testing.T) {
 	t.Run("test1", func(t *testing.T) {
 		g := NewMutable[struct{}](6)
