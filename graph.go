@@ -22,11 +22,6 @@ type Graph[T any] interface {
 	EdgesFrom(v int) iter.Seq2[int, T]
 }
 
-type Edge[T any] struct {
-	V, W   int
-	Weight T
-}
-
 type IntegerOrFloat interface {
 	~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr |
 		~int | ~int8 | ~int16 | ~int32 | ~int64 |

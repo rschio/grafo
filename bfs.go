@@ -2,6 +2,11 @@ package grafo
 
 import "iter"
 
+type Edge[T any] struct {
+	V, W   int
+	Weight T
+}
+
 // BFS returns an iterator of edges that traverse the graph
 // in Breadth First Search way, starting from vertex v.
 func BFS[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
