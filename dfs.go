@@ -39,7 +39,7 @@ func DFSPostvisit[T any](g Graph[T], v int) iter.Seq[int] {
 	}
 }
 
-func dfs[T any](g Graph[T], v int, previsit func(e Edge[T]) bool, posvisit func(v int) bool) {
+func dfs[T any](g Graph[T], v int, previsit func(e Edge[T]) bool, postvisit func(v int) bool) {
 	visited := make([]bool, g.Order())
 	visited[v] = true
 	path := new(stack[vIter[T]])
@@ -65,7 +65,7 @@ func dfs[T any](g Graph[T], v int, previsit func(e Edge[T]) bool, posvisit func(
 			defer stop()
 
 		case !ok:
-			if !posvisit(v) {
+			if !postvisit(v) {
 				return
 			}
 			if path.Len() == 0 {
