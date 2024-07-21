@@ -1,0 +1,68 @@
+Maxflow tests:
+The first file represents the graph using the format:
+v w weight
+
+The answer file use the format:
+source target flow
+
+-- 4_downey --
+0 1 3
+0 2 2
+1 2 5
+1 3 2
+2 3 3
+
+-- 4_downey.answer --
+0 3 5
+
+-- 6_brilliant --
+0 1 4
+0 2 3
+1 3 4
+3 2 3
+3 5 2
+2 4 6
+4 5 6
+
+-- 6_brilliant.answer --
+0 5 7
+
+-- 6_cp-algorithms --
+0 1 7
+0 4 4
+1 2 5
+1 3 3
+2 5 8
+3 2 3
+3 5 5
+4 1 3
+4 3 2
+
+-- 6_cp-algorithms.answer --
+0 5 10
+
+-- 6_programiz --
+0 1 8
+0 4 3
+1 2 9
+2 5 2
+3 5 5
+4 2 7
+4 3 4
+
+-- 6_programiz.answer --
+0 5 5
+
+-- 6_jithmisha --
+0 1 16
+0 3 13
+1 2 12
+2 3 9
+2 5 20
+3 1 4
+3 4 14
+4 2 7
+4 5 4
+
+-- 6_jithmisha.answer --
+0 5 19
