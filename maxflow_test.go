@@ -18,10 +18,10 @@ func TestMaxFlowTxtar(t *testing.T) {
 	files := archive.Files
 
 	for i := 0; i+1 < len(files); i += 2 {
-		t.Run(files[i].Name, func(t *testing.T) {
-			g := readTxtarGraph(t, files[i])
-			source, target, answer := readTxtarAnswer(t, files[i+1])
+		g := readTxtarGraph(t, files[i])
+		source, target, answer := readTxtarAnswer(t, files[i+1])
 
+		t.Run(files[i].Name, func(t *testing.T) {
 			flow := MaxFlow(g, source, target)
 			if flow != answer {
 				t.Fatalf("got %v flow want %v", flow, answer)
