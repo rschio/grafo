@@ -20,7 +20,7 @@ func TestMaxFlowTxtar(t *testing.T) {
 
 	for i := 0; i+1 < len(files); i += 2 {
 		t.Run(files[i].Name, func(t *testing.T) {
-			g := testutil.ReadGraph(t, bytes.NewReader(files[i].Data))
+			g := testutil.ReadGraph(t, bytes.NewReader(files[i].Data), strconv.Atoi)
 			source, target, answer := readTxtarAnswer(t, files[i+1])
 
 			flow := MaxFlow(g, source, target)

@@ -12,10 +12,14 @@ import (
 	"github.com/rschio/grafo/internal/multigraph"
 )
 
-func ReadGraph(t testing.TB, r io.Reader) *multigraph.Multigraph[int] {
+func ReadGraph[T any](
+	t testing.TB,
+	r io.Reader,
+	parseWeight func(string) (T, error),
+) *multigraph.Multigraph[T] {
 	t.Helper()
 
-	g, err := readGraph(r)
+	g, err := readGraph(r, parseWeight)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -23,7 +27,10 @@ func ReadGraph(t testing.TB, r io.Reader) *multigraph.Multigraph[int] {
 	return g
 }
 
-func readGraph(r io.Reader) (*multigraph.Multigraph[int], error) {
+func readGraph[T any](
+	r io.Reader,
+	parseWeight func(string) (T, error),
+) (*multigraph.Multigraph[T], error) {
 	sc := bufio.NewScanner(r)
 
 	n, err := readNumberOfVertices(sc)
@@ -31,7 +38,7 @@ func readGraph(r io.Reader) (*multigraph.Multigraph[int], error) {
 		return nil, err
 	}
 
-	g := multigraph.New[int](n)
+	g := multigraph.New[T](n)
 	sep := []byte(" ")
 	for sc.Scan() {
 		line := bytes.TrimSpace(sc.Bytes())
@@ -53,7 +60,7 @@ func readGraph(r io.Reader) (*multigraph.Multigraph[int], error) {
 		if err != nil {
 			return nil, err
 		}
-		weight, err := strconv.Atoi(wt)
+		weight, err := parseWeight(wt)
 		if err != nil {
 			return nil, err
 		}
