@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/rschio/grafo/internal/multigraph"
 )
 
 func DOT[T any](g Graph[T], w io.Writer) error {
@@ -129,7 +131,7 @@ func readGr(r io.Reader) (*Immutable[int], error) {
 		}
 	}
 
-	g := newMultigraph[int](V)
+	g := multigraph.New[int](V)
 	for sc.Scan() {
 		line := sc.Bytes()
 		// Skip empty lines and comments.

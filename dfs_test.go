@@ -12,11 +12,12 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/rschio/grafo/internal/multigraph"
 	"golang.org/x/tools/txtar"
 )
 
 func TestDFSPostvisit(t *testing.T) {
-	g := newMultigraph[struct{}](6)
+	g := multigraph.New[struct{}](6)
 	wt := struct{}{}
 	g.Add(0, 1, wt)
 	g.Add(0, 2, wt)
@@ -41,7 +42,7 @@ func TestDFSPostvisit(t *testing.T) {
 }
 
 func TestDFSPrevisit(t *testing.T) {
-	g := newMultigraph[struct{}](6)
+	g := multigraph.New[struct{}](6)
 	wt := struct{}{}
 	g.Add(0, 1, wt)
 	g.Add(0, 2, wt)
@@ -69,7 +70,7 @@ func TestDFSPrevisit(t *testing.T) {
 			recover()
 		}()
 
-		g := newMultigraph[struct{}](2)
+		g := multigraph.New[struct{}](2)
 		wt := struct{}{}
 		g.Add(0, 1, wt)
 
@@ -82,7 +83,7 @@ func TestDFSPrevisit(t *testing.T) {
 			recover()
 		}()
 
-		g := newMultigraph[struct{}](2)
+		g := multigraph.New[struct{}](2)
 		wt := struct{}{}
 		g.Add(0, 1, wt)
 
@@ -239,7 +240,7 @@ func dfsR[T any](g Graph[T], visited []bool, yield func(e Edge[T]) bool, v int) 
 	}
 }
 
-func graphFromFile(data []byte) (*multigraph[int], error) {
+func graphFromFile(data []byte) (*multigraph.Multigraph[int], error) {
 	lines := strings.Split(string(data), "\n")
 	first := true
 	allNums := make([]int, 0)
@@ -272,7 +273,7 @@ func graphFromFile(data []byte) (*multigraph[int], error) {
 		return nil, fmt.Errorf("malformed file, odd number of vertices doesn't form edges")
 	}
 
-	g := newMultigraph[int](V)
+	g := multigraph.New[int](V)
 	for i := 0; i < len(allNums); i = i + 2 {
 		g.Add(allNums[i], allNums[i+1], 0)
 	}
