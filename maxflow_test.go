@@ -7,6 +7,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/rschio/grafo/internal/testutil"
 	"golang.org/x/tools/txtar"
 )
 
@@ -18,10 +19,10 @@ func TestMaxFlowTxtar(t *testing.T) {
 	files := archive.Files
 
 	for i := 0; i+1 < len(files); i += 2 {
-		g := readTxtarGraph(t, files[i])
-		source, target, answer := readTxtarAnswer(t, files[i+1])
-
 		t.Run(files[i].Name, func(t *testing.T) {
+			g := testutil.ReadGraph(t, bytes.NewReader(files[i].Data))
+			source, target, answer := readTxtarAnswer(t, files[i+1])
+
 			flow := MaxFlow(g, source, target)
 			if flow != answer {
 				t.Fatalf("got %v flow want %v", flow, answer)
@@ -51,19 +52,4 @@ func readTxtarAnswer(t testing.TB, f txtar.File) (source, target, answer int) {
 	}
 
 	return v0, v1, v2
-}
-
-func readTxtarGraph(t testing.TB, f txtar.File) *Mutable[int] {
-	numVertices, _, _ := strings.Cut(filepath.Base(f.Name), "_")
-	n, err := strconv.Atoi(numVertices)
-	if err != nil {
-		t.Fatalf("failed to get number of vertices: %v", err)
-	}
-
-	g, err := readWithSep(n, bytes.NewReader(bytes.TrimSpace(f.Data)), []byte(" "))
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	return g
 }
