@@ -67,3 +67,24 @@ func (g *Mutable[T]) EdgesFrom(i int) iter.Seq2[int, T] {
 		}
 	}
 }
+
+// Weight returns the weight of an edge from v to w, or zero value if no such edge exists.
+func (g *Mutable[T]) Weight(v, w int) T {
+	if v < 0 || v >= g.Order() {
+		return *new(T)
+	}
+	return g.edges[v][w]
+}
+
+// Copy returns a copy of g.
+// If g is a multigraph, any duplicate edges in g will be lost.
+func Copy[T any](g Graph[T]) *Mutable[T] {
+	n := g.Order()
+	h := NewMutable[T](n)
+	for v := 0; v < n; v++ {
+		for w, weight := range g.EdgesFrom(v) {
+			h.Add(v, w, weight)
+		}
+	}
+	return h
+}
