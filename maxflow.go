@@ -65,17 +65,18 @@ func MaxFlow[T constraints.Integer](g Graph[T], s, t int) (flow T, graph Graph[T
 }
 
 func residualFlow[T constraints.Integer](g *Mutable[T], s, t int, prev []int) bool {
-	// TODO: Use the queue type.
 	visited := make([]bool, g.Order())
 	prev[s], visited[s] = -1, true
-	for queue := []int{s}; len(queue) > 0; {
-		v := queue[0]
-		queue = queue[1:]
+	queue := newQueue(10)
+	queue.Push(s)
+
+	for queue.Len() > 0 {
+		v := queue.Pop()
 		for w, weight := range g.EdgesFrom(v) {
 			if !visited[w] && weight > 0 {
 				prev[w] = v
 				visited[w] = true
-				queue = append(queue, w)
+				queue.Push(w)
 			}
 		}
 	}
