@@ -28,63 +28,57 @@
 
 package grafo
 
-import (
-	"iter"
-	"strconv"
-)
+import "golang.org/x/exp/constraints"
 
-type Mutable[T any] struct {
-	edges []map[int]T
-}
-
-func NewMutable[T any](n int) *Mutable[T] {
-	return &Mutable[T]{edges: make([]map[int]T, n)}
-}
-
-func (g *Mutable[T]) Add(v, w int, weight T) {
-	if w < 0 || w >= g.Order() {
-		panic("vertex out of range: " + strconv.Itoa(w))
+func MaxFlow[T constraints.Integer](g Graph[T], s, t int) (flow T, graph Graph[T]) {
+	// Edmonds-Karp's algorithm
+	inf := InfFor[T]()
+	n := g.Order()
+	prev := make([]int, n)
+	residual := Copy(g)
+	for residualFlow(residual, s, t, prev) && flow < inf {
+		pathFlow := inf
+		for v := t; v != s; {
+			u := prev[v]
+			if c := residual.Weight(u, v); c < pathFlow {
+				pathFlow = c
+			}
+			v = u
+		}
+		flow += pathFlow
+		for v := t; v != s; {
+			u := prev[v]
+			residual.Add(u, v, residual.Weight(u, v)-pathFlow)
+			residual.Add(v, u, residual.Weight(v, u)+pathFlow)
+			v = u
+		}
 	}
-	if g.edges[v] == nil {
-		g.edges[v] = make(map[int]T)
-	}
-	g.edges[v][w] = weight
-}
-
-func (g *Mutable[T]) AddBoth(v, w int, weight T) {
-	g.Add(v, w, weight)
-	g.Add(w, v, weight)
-}
-
-func (g *Mutable[T]) Order() int { return len(g.edges) }
-
-func (g *Mutable[T]) EdgesFrom(i int) iter.Seq2[int, T] {
-	return func(yield func(w int, weight T) bool) {
-		for w, weight := range g.edges[i] {
-			if !yield(w, weight) {
-				return
+	res := NewMutable[T](n)
+	for v := 0; v < n; v++ {
+		for w, weight := range g.EdgesFrom(v) {
+			if flow := weight - residual.Weight(v, w); flow > 0 {
+				res.Add(v, w, flow)
 			}
 		}
 	}
+	return flow, Sort(res)
 }
 
-// Weight returns the weight of an edge from v to w, or zero value if no such edge exists.
-func (g *Mutable[T]) Weight(v, w int) T {
-	if v < 0 || v >= g.Order() {
-		return *new(T)
-	}
-	return g.edges[v][w]
-}
+func residualFlow[T constraints.Integer](g *Mutable[T], s, t int, prev []int) bool {
+	visited := make([]bool, g.Order())
+	prev[s], visited[s] = -1, true
+	queue := newQueue(10)
+	queue.Push(s)
 
-// Copy returns a copy of g.
-// If g is a multigraph, any duplicate edges in g will be lost.
-func Copy[T any](g Graph[T]) *Mutable[T] {
-	n := g.Order()
-	h := NewMutable[T](n)
-	for v := 0; v < n; v++ {
+	for queue.Len() > 0 {
+		v := queue.Pop()
 		for w, weight := range g.EdgesFrom(v) {
-			h.Add(v, w, weight)
+			if !visited[w] && weight > 0 {
+				prev[w] = v
+				visited[w] = true
+				queue.Push(w)
+			}
 		}
 	}
-	return h
+	return visited[t]
 }

@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/rschio/grafo/internal/multigraph"
 )
 
 func DOT[T any](g Graph[T], w io.Writer) error {
@@ -63,12 +65,12 @@ func Read(path string) (*Mutable[int], error) {
 	return read(n, f)
 }
 
-func read(n int, r io.Reader) (*Mutable[int], error) {
+func readWithSep(n int, r io.Reader, sep []byte) (*Mutable[int], error) {
 	g := NewMutable[int](n)
 
 	sc := bufio.NewScanner(r)
 	for sc.Scan() {
-		parts := bytes.Split(sc.Bytes(), []byte{','})
+		parts := bytes.Split(sc.Bytes(), sep)
 		if len(parts) != 3 {
 			return nil, fmt.Errorf("got %d elements in one line, want 3", len(parts))
 		}
@@ -95,6 +97,10 @@ func read(n int, r io.Reader) (*Mutable[int], error) {
 	}
 
 	return g, nil
+}
+
+func read(n int, r io.Reader) (*Mutable[int], error) {
+	return readWithSep(n, r, []byte(","))
 }
 
 func readGrFile(path string) (*Immutable[int], error) {
@@ -125,7 +131,7 @@ func readGr(r io.Reader) (*Immutable[int], error) {
 		}
 	}
 
-	g := newMultigraph[int](V)
+	g := multigraph.New[int](V)
 	for sc.Scan() {
 		line := sc.Bytes()
 		// Skip empty lines and comments.
