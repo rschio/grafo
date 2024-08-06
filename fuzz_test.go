@@ -4,11 +4,15 @@ import (
 	"bytes"
 	"iter"
 	"math/rand/v2"
+	"strconv"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/rschio/grafo/internal/encoding/dot"
 	"github.com/rschio/graph"
 )
+
+func itoa64(i int64) string { return strconv.FormatInt(i, 10) }
 
 func FuzzStrongComponents(f *testing.F) {
 	f.Add(uint(10), uint(20), uint64(0), uint64(1))
@@ -25,7 +29,8 @@ func FuzzStrongComponents(f *testing.F) {
 
 		if !cmp.Equal(comps1, comps2) {
 			var buf bytes.Buffer
-			if err := DOT(g, &buf); err != nil {
+			enc := dot.NewEncoder(&buf, itoa64)
+			if err := enc.Encode(g); err != nil {
 				t.Errorf("failed to DOT: %v", err)
 			}
 			t.Errorf("V=%d E=%d\nGraph=[%s]\ncomps1=%v\ncomps2=%v", V, E, buf.String(), comps1, comps2)
@@ -56,7 +61,8 @@ func FuzzShortestPaths(f *testing.F) {
 
 		if diff := cmp.Diff(dist1, dist2); diff != "" {
 			var buf bytes.Buffer
-			if err := DOT(g, &buf); err != nil {
+			enc := dot.NewEncoder(&buf, itoa64)
+			if err := enc.Encode(g); err != nil {
 				t.Errorf("failed to DOT: %v", err)
 			}
 			t.Errorf("V=%d E=%d maxValue=%d v=%d\nGraph=[%s]\ndiff=%v", V, E, maxValue, v, buf.String(), diff)
@@ -85,7 +91,10 @@ func FuzzDFS(f *testing.F) {
 			path = append(path, e1)
 			if diff := cmp.Diff(e1, e2); diff != "" || ok1 != ok2 {
 				var buf bytes.Buffer
-				DOT(g, &buf)
+				enc := dot.NewEncoder(&buf, itoa64)
+				if err := enc.Encode(g); err != nil {
+					t.Errorf("failed to DOT: %v", err)
+				}
 				t.Fatalf("ok1 %v ok2 %v diff: %s\npath[%v]\n%s", ok1, ok2, diff, path, buf.String())
 			}
 			if ok1 == false {

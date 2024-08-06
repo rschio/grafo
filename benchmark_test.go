@@ -3,13 +3,16 @@ package grafo
 import (
 	"math/rand/v2"
 	"path/filepath"
+	"strconv"
 	"testing"
+
+	"github.com/rschio/grafo/internal/testutil"
 )
 
 var complete = Sort(completeGraph(1000))
 var complete2 = Sort(completeGraph2(1000))
 var pathG = Sort(pathGraph(1000))
-var dimacsG = readDIMACS("USA-road-d.NY.gr")
+var dimacsG = readDIMACS("usa-road-d.ny")
 
 func BenchmarkBellmanFord(b *testing.B) {
 	benchmarks := []struct {
@@ -152,9 +155,9 @@ func completeGraph(n int) *Mutable[struct{}] {
 }
 
 func readDIMACS(fname string) *Immutable[int] {
-	g, err := readGrFile(filepath.Join("testdata", fname))
+	g, err := testutil.ReadFile(filepath.Join("testdata", fname), strconv.Atoi)
 	if err != nil {
 		panic(err)
 	}
-	return g
+	return Sort(g)
 }

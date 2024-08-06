@@ -13,6 +13,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/rschio/grafo/internal/multigraph"
+	"github.com/rschio/grafo/internal/testutil"
 	"golang.org/x/tools/txtar"
 )
 
@@ -142,9 +143,10 @@ func TestDFS(t *testing.T) {
 }
 
 func TestDFSPossibleTrees(t *testing.T) {
-	g, err := Read(filepath.Join("testdata", "7_dfs_graph"))
+	file := filepath.Join("testdata", "7_dfs_graph")
+	g, err := testutil.ReadFile(file, strconv.Atoi)
 	if err != nil {
-		t.Fatalf("failed to read graph: %v", err)
+		t.Fatal(err)
 	}
 
 	possiblePaths := [][]int{
