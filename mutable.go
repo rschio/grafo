@@ -56,6 +56,19 @@ func (g *Mutable[T]) AddBoth(v, w int, weight T) {
 	g.Add(w, v, weight)
 }
 
+// Delete removes an edge from v to w.
+func (g *Mutable[T]) Delete(v, w int) {
+	delete(g.edges[v], w)
+}
+
+// DeleteBoth removes all edges between v and w.
+func (g *Mutable[T]) DeleteBoth(v, w int) {
+	g.Delete(v, w)
+	if v != w {
+		g.Delete(w, v)
+	}
+}
+
 func (g *Mutable[T]) Order() int { return len(g.edges) }
 
 func (g *Mutable[T]) EdgesFrom(i int) iter.Seq2[int, T] {
