@@ -33,14 +33,27 @@ import (
 	"strconv"
 )
 
+// Mutable represents a directed graph with a fixed number
+// of vertices and weighted edges that can be added or removed.
+// The implementation uses hash mpas to associate each vertex in the graph with
+// its adjacent vertices. This gives constant time performance for
+// all basic operations.
 type Mutable[T any] struct {
+	// The map edges[v] contains the mapping {w: weight} if there is an edge
+	// from v to w, and weight is the cost assigned to this edge.
+	// The maps may be nil and are allocated as needed.
 	edges []map[int]T
 }
 
+// NewMutable creates a Mutable graph.
 func NewMutable[T any](n int) *Mutable[T] {
 	return &Mutable[T]{edges: make([]map[int]T, n)}
 }
 
+// Add appends the edge v -[weight]-> w to the graph.
+//
+// If already exists a edge v -> w the old edge is deleted,
+// Mutable does not support parallel edges.
 func (g *Mutable[T]) Add(v, w int, weight T) {
 	if w < 0 || w >= g.Order() {
 		panic("vertex out of range: " + strconv.Itoa(w))
@@ -51,6 +64,11 @@ func (g *Mutable[T]) Add(v, w int, weight T) {
 	g.edges[v][w] = weight
 }
 
+// AddBoth appends the edges v -[weight]-> w and w -[weight]-> v to
+// the graph.
+//
+// If already exists a edge v -> w or w -> v the old edge is deleted,
+// Mutable does not support parallel edges.
 func (g *Mutable[T]) AddBoth(v, w int, weight T) {
 	g.Add(v, w, weight)
 	g.Add(w, v, weight)
@@ -69,11 +87,13 @@ func (g *Mutable[T]) DeleteBoth(v, w int) {
 	}
 }
 
+// Order returns the number of vertices in the graph.
 func (g *Mutable[T]) Order() int { return len(g.edges) }
 
-func (g *Mutable[T]) EdgesFrom(i int) iter.Seq2[int, T] {
+// EdgesFrom returns an iterator of edges from vertex v.
+func (g *Mutable[T]) EdgesFrom(v int) iter.Seq2[int, T] {
 	return func(yield func(w int, weight T) bool) {
-		for w, weight := range g.edges[i] {
+		for w, weight := range g.edges[v] {
 			if !yield(w, weight) {
 				return
 			}
