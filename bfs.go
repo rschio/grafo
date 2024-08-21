@@ -2,6 +2,7 @@ package grafo
 
 import "iter"
 
+// Edge is a directed graph edge V -[Weight]-> W.
 type Edge[T any] struct {
 	V, W   int
 	Weight T
