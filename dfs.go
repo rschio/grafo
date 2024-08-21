@@ -14,6 +14,8 @@ func DFS[T any](g Graph[T], v int) iter.Seq[Edge[T]] {
 	}
 }
 
+// DFSPrevisit returns an iterator of vertices in Previsit order,
+// starting from vertex v.
 func DFSPrevisit[T any](g Graph[T], v int) iter.Seq[int] {
 	return func(yield func(v int) bool) {
 		if v < 0 || v >= g.Order() {
@@ -32,6 +34,8 @@ func DFSPrevisit[T any](g Graph[T], v int) iter.Seq[int] {
 	}
 }
 
+// DFSPostvisit returns an iterator of vertices in Postvisit order,
+// starting from vertex v.
 func DFSPostvisit[T any](g Graph[T], v int) iter.Seq[int] {
 	return func(yield func(v int) bool) {
 		noop := func(Edge[T]) bool { return true }
