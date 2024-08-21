@@ -1,6 +1,6 @@
 module github.com/rschio/grafo
 
-go 1.23rc1
+go 1.23
 
 require (
 	github.com/google/go-cmp v0.6.0
