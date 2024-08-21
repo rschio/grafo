@@ -11,6 +11,21 @@ type IntegerOrFloat interface {
 		~float32 | ~float64
 }
 
+// InfFor returns the infinite representation for a type T.
+//
+// For floats it returns math.Inf(1).
+//
+// For ints/uints it returns the maximum positive value the
+// type can represent, e.g. math.MaxInt64 for int64.
+//
+// InfFor is useful to check if the returned value of a function is
+// infinite, like the cost of a shortest path or the max flow.
+//
+// E.g.
+//
+//	if cost == InfFor[int]() {
+//	    ...
+//	}
 func InfFor[T IntegerOrFloat]() T {
 	switch reflect.TypeFor[T]().Kind() {
 	case reflect.Int8:
