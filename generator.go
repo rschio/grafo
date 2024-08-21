@@ -6,12 +6,12 @@ import (
 	"github.com/rschio/grafo/internal/multigraph"
 )
 
-// GenerateRandomEdges genereate a random graph with V vertices and E edges,
+// generateRandomEdges genereate a random graph with V vertices and E edges,
 // without self-loops or parallel edges.
 // It panics if E > V * (V - 1).
 //
 // This function is generally not suitable for generating huge dense graphs.
-func GenerateRandomEdges[T int | int64](V, E int, maxWeight T) *Mutable[T] {
+func generateRandomEdges[T int | int64](V, E int, maxWeight T) *Mutable[T] {
 	if E > V*(V-1) {
 		panic("GenerateRandomEdges does not generate self-loops or parallel edges, but got: E > V * (V - 1)")
 	}
@@ -35,7 +35,7 @@ func GenerateRandomEdges[T int | int64](V, E int, maxWeight T) *Mutable[T] {
 	return g
 }
 
-func GenerateRandom(V, E, maxWeight int) *Mutable[int] {
+func generateRandom(V, E, maxWeight int) *Mutable[int] {
 	if E > V*(V-1) {
 		panic("GenerateRandom does not generate self-loops or parallel edges, but got: E > V * (V - 1)")
 	}

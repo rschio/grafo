@@ -6,7 +6,7 @@ func TestGenerator(t *testing.T) {
 	V := 10
 	E := 90
 	maxWeight := 50
-	g := GenerateRandomEdges(V, E, maxWeight)
+	g := generateRandomEdges(V, E, maxWeight)
 
 	if g.Order() != V {
 		t.Errorf("got %d want %d vertices", g.Order(), V)
@@ -31,7 +31,7 @@ func TestGeneratorRandom(t *testing.T) {
 	V := 50
 	E := 500
 	maxWeight := 50
-	g := GenerateRandom(V, E, maxWeight)
+	g := generateRandom(V, E, maxWeight)
 
 	if g.Order() != V {
 		t.Errorf("got %d want %d vertices", g.Order(), V)
