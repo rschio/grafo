@@ -30,6 +30,10 @@ package grafo
 
 import "golang.org/x/exp/constraints"
 
+// MaxFlow computes a maximum flow from s to t in a graph
+// with nonnegative edge capacities.
+// The time complexity is O(|E|²⋅|V|), where |E| is the number of edges
+// and |V| the number of vertices in the graph.
 func MaxFlow[T constraints.Integer](g Graph[T], s, t int) (flow T, graph Graph[T]) {
 	// Edmonds-Karp's algorithm
 	inf := InfFor[T]()
