@@ -43,7 +43,6 @@ func (e *Encoder[T]) Encode(g internal.Graph[T]) error {
 type Decoder[T any] struct {
 	r           io.Reader
 	parseWeight func(string) (T, error)
-	err         error
 }
 
 func NewDecoder[T any](r io.Reader, parseWeight func(string) (T, error)) *Decoder[T] {

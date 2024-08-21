@@ -46,9 +46,7 @@ func visitedOrder(visited []int, before []int, after []int) error {
 			return fmt.Errorf("visited in wrong order:\nvisited %v\nwant before %v\nwant after%v",
 				visited, before, after)
 		}
-		if _, ok := b[v]; ok {
-			delete(b, v)
-		}
+		delete(b, v)
 	}
 
 	return nil
