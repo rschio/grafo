@@ -118,6 +118,7 @@ func build[T any](g Graph[T], transpose bool) *Immutable[T] {
 	return h
 }
 
+// EdgesFrom returns an iterator of edges from vertex v.
 func (g *Immutable[T]) EdgesFrom(v int) iter.Seq2[int, T] {
 	return func(yield func(w int, weight T) bool) {
 		for _, e := range g.edges[v] {
@@ -127,29 +128,6 @@ func (g *Immutable[T]) EdgesFrom(v int) iter.Seq2[int, T] {
 		}
 	}
 }
-
-//// VisitFrom calls the do function starting from the first neighbor w
-//// for which w ≥ a, with c equal to the cost of the edge from v to w.
-//// The neighbors are then visited in increasing numerical order.
-//// If do returns true, VisitFrom returns immediately,
-//// skipping any remaining neighbors, and returns true.
-//func (g *Immutable) VisitFrom(v int, a int, do func(w int, c int64) bool) bool {
-//	neighbors := g.edges[v]
-//	n := len(neighbors)
-//	i := sort.Search(n, func(i int) bool { return a <= neighbors[i].vertex })
-//	for ; i < n; i++ {
-//		e := neighbors[i]
-//		if do(e.vertex, e.weight) {
-//			return true
-//		}
-//	}
-//	return false
-//}
-
-//// String returns a string representation of the graph.
-//func (g *Immutable) String() string {
-//	return String(g)
-//}
 
 // Order returns the number of vertices in the graph.
 func (g *Immutable[T]) Order() int {
