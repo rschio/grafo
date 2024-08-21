@@ -5,19 +5,15 @@ import (
 	"math"
 )
 
+// StrongComponents returns a slice of g's strong connected components.
+// Each slice contains the vertices of each component.
+//
+// A component is strongly connected if all its vertices are reachable
+// from every other vertex in the component.
 func StrongComponents[T any](g Graph[T]) [][]int {
 	// StrongComponents use the algorithmT with non-recursive
 	// depth-first search as described in
 	// "Finding strong components using depth-fist search".
-	//
-	// TODO: What to choose?
-	// The non-recursive algorithmT needs a pull iterator to
-	// work, but the Graph interface is a push iterator.
-	// To solve the problem I could copy the graph and store it in
-	// a favorable struct or change the push iterator to a pull one.
-	// To copy the graph we need |E| space (in dense graphs ~|V²|) or
-	// changing the iterator type slows down by a factor of 10 or 20x.
-	// I choosed to slow down and keep the memory in a safe amount.
 	n := g.Order()
 	s := &scc[T]{
 		g:          g,
