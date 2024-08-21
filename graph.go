@@ -1,3 +1,7 @@
+// Package grafo contains generic implementations of basic graph algorithms.
+//
+// Most of the functions of this package operates on the Graph[T] interface,
+// a small but powerfull interface that represents a directed weighted graph.
 package grafo
 
 import (
