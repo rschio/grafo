@@ -13,7 +13,7 @@ func BellmanFord[T IntegerOrFloat](g Graph[T], v int) (parent []int, dist []T, o
 	parent = make([]int, n)
 	dist = make([]T, n)
 	onQueue := make([]bool, n)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		parent[i] = -1
 		dist[i] = inf
 		onQueue[i] = false

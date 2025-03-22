@@ -114,7 +114,7 @@ func (g *Mutable[T]) Weight(v, w int) T {
 func Copy[T any](g Graph[T]) *Mutable[T] {
 	n := g.Order()
 	h := NewMutable[T](n)
-	for v := 0; v < n; v++ {
+	for v := range n {
 		for w, weight := range g.EdgesFrom(v) {
 			h.Add(v, w, weight)
 		}

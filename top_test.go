@@ -120,7 +120,7 @@ func BenchmarkAcyclic(b *testing.B) {
 	n := 1000
 	b.StopTimer()
 	g := NewMutable[struct{}](n)
-	for i := 0; i < 2*n; i++ {
+	for range 2 * n {
 		v, w := rand.IntN(n), rand.IntN(n)
 		if v < w {
 			g.AddBoth(v, w, struct{}{})
@@ -136,7 +136,7 @@ func BenchmarkTopSort(b *testing.B) {
 	n := 1000
 	b.StopTimer()
 	g := NewMutable[struct{}](n)
-	for i := 0; i < 2*n; i++ {
+	for range 2 * n {
 		v, w := rand.IntN(n), rand.IntN(n)
 		if v < w {
 			g.AddBoth(v, w, struct{}{})

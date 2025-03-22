@@ -66,7 +66,7 @@ func BenchmarkMST(b *testing.B) {
 	n := 1000
 	b.StopTimer()
 	g := NewMutable[int64](n)
-	for i := 0; i < 2*n; i++ {
+	for range 2 * n {
 		g.Add(rand.IntN(n), rand.IntN(n), int64(rand.Int()))
 	}
 	b.StartTimer()

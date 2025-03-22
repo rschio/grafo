@@ -43,8 +43,8 @@ func generateRandom(V, E, maxWeight int) *Mutable[int] {
 	p := float64(E) / float64(V) / float64(V-1)
 	g := NewMutable[int](V)
 
-	for i := 0; i < V; i++ {
-		for j := 0; j < V; j++ {
+	for i := range V {
+		for j := range V {
 			if i == j {
 				continue
 			}

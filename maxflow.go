@@ -58,7 +58,7 @@ func MaxFlow[T constraints.Integer](g Graph[T], s, t int) (flow T, graph Graph[T
 		}
 	}
 	res := NewMutable[T](n)
-	for v := 0; v < n; v++ {
+	for v := range n {
 		for w, weight := range g.EdgesFrom(v) {
 			if flow := weight - residual.Weight(v, w); flow > 0 {
 				res.Add(v, w, flow)

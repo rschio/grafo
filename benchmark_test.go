@@ -122,7 +122,7 @@ func BenchmarkRange(b *testing.B) {
 
 func pathGraph(n int) *Mutable[int] {
 	g := NewMutable[int](n)
-	for i := 0; i < 2*n; i++ {
+	for range 2 * n {
 		g.Add(rand.IntN(n), rand.IntN(n), rand.Int())
 	}
 	return g
